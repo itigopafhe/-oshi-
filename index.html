@@ -1,9 +1,9 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Archive Ultimate v14</title>
+    <title>Archive Ultimate v14.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Noto+Sans+JP:wght@400;700&display=swap');
@@ -54,9 +54,9 @@
     </div>
 
     <div class="flex justify-center bg-white/90 backdrop-blur-md sticky top-0 z-30 border-b border-pink-50 mb-8">
-        <button onclick="switchTab('works')" id="tab-works" class="px-6 py-4 tab-active text-[10px] tracking-widest uppercase">作品</button>
-        <button onclick="switchTab('chars')" id="tab-chars" class="px-6 py-4 text-[10px] tracking-widest uppercase">キャラクター</button>
-        <button onclick="switchTab('couplings')" id="tab-couplings" class="px-6 py-4 text-[10px] tracking-widest uppercase">コンビ・カプ</button>
+        <button onclick="switchTab('works')" id="tab-works" class="px-6 py-4 tab-active text-[10px] tracking-widest uppercase">Works</button>
+        <button onclick="switchTab('chars')" id="tab-chars" class="px-6 py-4 text-[10px] tracking-widest uppercase">Characters</button>
+        <button onclick="switchTab('couplings')" id="tab-couplings" class="px-6 py-4 text-[10px] tracking-widest uppercase">Combi / CP</button>
     </div>
 
     <main class="max-w-2xl mx-auto px-6">
@@ -66,7 +66,10 @@
     <div id="detail-view">
         <div class="sticky top-0 p-6 z-50 flex justify-between items-center bg-white/80 backdrop-blur-md">
             <button onclick="closeDetail()" class="text-pink-400 font-bold text-[10px] tracking-widest uppercase">← CLOSE</button>
-            <div id="auto-save-status" class="text-[9px] text-gray-300 font-bold uppercase tracking-widest">Saved</div>
+            <div class="flex items-center gap-4">
+                <div id="auto-save-status" class="text-[9px] text-gray-300 font-bold uppercase tracking-widest">Saved</div>
+                <button id="header-delete-btn" class="text-red-500 font-extrabold text-[10px] uppercase tracking-widest bg-red-50 px-3 py-1.5 rounded-lg">DELETE</button>
+            </div>
         </div>
         <div id="detail-content" class="max-w-3xl mx-auto px-8 pb-10"></div>
     </div>
@@ -80,40 +83,34 @@
 
     <script>
         const defaultSchemas = {
-            works: [{ id: 'name', label: '作品名', type: 'text', visible: true, isTitle: true }, { id: 'media', label: 'メディア', type: 'text', visible: true }, { id: 'period', label: 'ハマった時期', type: 'date', visible: true }, { id: 'url', label: '公式サイト', type: 'url', visible: false }, { id: 'img', label: '画像', type: 'file', visible: true }, { id: 'memo', label: '感想', type: 'textarea', visible: true, isAccordion: true }, { id: 'tags', label: 'タグ', type: 'tags', visible: true }],
-            chars: [{ id: 'name', label: 'キャラクター名', type: 'text', visible: true, isTitle: true }, { id: 'work', label: '作品名', type: 'text', visible: true }, { id: 'period', label: 'ハマった時期', type: 'date', visible: true }, { id: 'url', label: 'リンク', type: 'url', visible: false }, { id: 'img', label: '画像', type: 'file', visible: true }, { id: 'memo', label: '感想', type: 'textarea', visible: true, isAccordion: true }, { id: 'tags', label: 'タグ', type: 'tags', visible: true }],
-            couplings: [{ id: 'name', label: 'コンビ・カプ名', type: 'text', visible: true, isTitle: true }, { id: 'char1', label: 'キャラクター1', type: 'text', visible: true }, { id: 'char2', label: 'キャラクター2', type: 'text', visible: true }, { id: 'work', label: '作品名', type: 'text', visible: true }, { id: 'period', label: 'ハマった時期', type: 'date', visible: true }, { id: 'url', label: '参考URL', type: 'url', visible: false }, { id: 'img', label: '画像', type: 'file', visible: true }, { id: 'memo', label: '解釈メモ', type: 'textarea', visible: true, isAccordion: true }, { id: 'tags', label: 'タグ', type: 'tags', visible: true }]
+            works: [{ id: 'name', label: '作品名', type: 'text', visible: true, isTitle: true }, { id: 'media', label: 'メディア', type: 'text', visible: true }, { id: 'period', label: 'ハマった時期', type: 'date', visible: true }, { id: 'url', label: '公式サイト', type: 'url', visible: false }, { id: 'img', label: '画像', type: 'file', visible: true }, { id: 'memo', label: 'Note', type: 'textarea', visible: true, isAccordion: true }, { id: 'tags', label: 'タグ', type: 'tags', visible: true }],
+            chars: [{ id: 'name', label: 'キャラクター名', type: 'text', visible: true, isTitle: true }, { id: 'work', label: '作品名', type: 'text', visible: true }, { id: 'period', label: 'ハマった時期', type: 'date', visible: true }, { id: 'url', label: 'リンク', type: 'url', visible: false }, { id: 'img', label: '画像', type: 'file', visible: true }, { id: 'memo', label: 'Note', type: 'textarea', visible: true, isAccordion: true }, { id: 'tags', label: 'タグ', type: 'tags', visible: true }],
+            couplings: [{ id: 'name', label: 'コンビ・カプ名', type: 'text', visible: true, isTitle: true }, { id: 'char1', label: 'キャラクター1', type: 'text', visible: true }, { id: 'char2', label: 'キャラクター2', type: 'text', visible: true }, { id: 'work', label: '作品名', type: 'text', visible: true }, { id: 'period', label: 'ハマった時期', type: 'date', visible: true }, { id: 'url', label: '参考URL', type: 'url', visible: false }, { id: 'img', label: '画像', type: 'file', visible: true }, { id: 'memo', label: 'Note', type: 'textarea', visible: true, isAccordion: true }, { id: 'tags', label: 'タグ', type: 'tags', visible: true }]
         };
 
-        const taroHanakoSamples = {
-            works: [{ name: "サンプル", media: "絵本", period: "2026-03-07", url: "https://example.com", tags: "冒険, 日常", visConfig: {} }],
+        const updatedSamples = {
+            works: [{ name: "サンプル", media: "絵本", period: "2026-03-07", url: "https://example.com", memo: "画像を自動圧縮する機能が搭載されています。", tags: "サンプル", visConfig: {} }],
             chars: [
-                { name: "太郎", work: "サンプル", period: "2026-03-07",ribbonId: "name", visConfig: {} },
-                { name: "花子", work: "サンプル", period: "2026-03-07", tags: "ヒロイン", ribbonId: "name", visConfig: {} }
+                { name: "太郎", work: "サンプル", period: "2026-03-07", memo: "元気な男の子。", tags: "主人公", ribbonId: "name", visConfig: {} },
+                { name: "花子", work: "サンプル", period: "2026-03-07", memo: "しっかり者の女の子。", tags: "ヒロイン", ribbonId: "name", visConfig: {} }
             ],
-            couplings: [{ name: "仲良しコンビ", char1: "太郎", char2: "花子", work: "太郎の冒険", period: "2026-03-07", visConfig: { name: false } }]
+            couplings: [{ name: "花太", char1: "花子", char2: "太郎", work: "サンプル", period: "2026-03-07", memo: "仲良しな二人組。", tags: "友情", visConfig: { name: false } }]
         };
 
-        let state = { currentTab: 'works', schemas: JSON.parse(localStorage.getItem('archive_schemas')) || defaultSchemas, data: JSON.parse(localStorage.getItem('archive_data')) || taroHanakoSamples, activeTag: null };
+        let state = { currentTab: 'works', schemas: JSON.parse(localStorage.getItem('archive_schemas')) || defaultSchemas, data: JSON.parse(localStorage.getItem('archive_data')) || updatedSamples, activeTag: null };
 
-        // 画像圧縮機能
         const compressImage = (file) => {
             return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
+                const reader = new FileReader(); reader.readAsDataURL(file);
                 reader.onload = (e) => {
-                    const img = new Image();
-                    img.src = e.target.result;
+                    const img = new Image(); img.src = e.target.result;
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        let width = img.width; let height = img.height;
-                        const max = 1000; // 長辺を1000pxに制限
-                        if (width > height) { if (width > max) { height *= max / width; width = max; } }
-                        else { if (height > max) { width *= max / height; height = max; } }
-                        canvas.width = width; canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.7)); // 画質0.7でJPEG圧縮
+                        let w = img.width; let h = img.height; const max = 1000;
+                        if (w > h) { if (w > max) { h *= max / w; w = max; } } else { if (h > max) { w *= max / h; h = max; } }
+                        canvas.width = w; canvas.height = h;
+                        const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', 0.7));
                     };
                 };
             });
@@ -134,10 +131,9 @@
                 let fieldsHtml = ''; let titleHtml = ''; let headerHtml = ''; let ribbonHtml = ''; let coupleHtml = '';
                 const imgId = schema.find(f => f.type === 'file')?.id;
                 const imgVal = item[imgId];
-                const hasImg = !!imgVal;
                 const getVis = (fid) => item.visConfig?.[fid] ?? schema.find(s=>s.id===fid).visible;
 
-                if (hasImg && item.ribbonId !== 'none') {
+                if (imgVal && item.ribbonId !== 'none') {
                     const rId = item.ribbonId || schema.find(f => f.isTitle).id;
                     const rField = schema.find(f => f.id === rId);
                     if (rField && item[rField.id]) ribbonHtml = `<div class="ribbon-label uppercase">${item[rField.id]}</div>`;
@@ -153,9 +149,8 @@
                 schema.forEach(field => {
                     if (state.currentTab === 'couplings' && (field.id === 'char1' || field.id === 'char2')) return;
                     if (!getVis(field.id) || !item[field.id] || field.isAccordion || field.type === 'url') return;
-                    
                     if (field.isTitle) titleHtml = `<h2 class="text-lg font-bold text-gray-800 leading-tight">${item[field.id]}</h2>`;
-                    else if (field.type === 'file') headerHtml = `<img src="${imgVal}" class="w-full h-72 object-cover">`;
+                    else if (field.type === 'file') headerHtml = `<img src="${imgVal}" class="w-full h-72 object-cover transition-opacity hover:opacity-95">`;
                     else if (field.type === 'tags') {
                         const tags = item[field.id].split(',').map(t => `<span class="tag-chip">${t.trim()}</span>`).join('');
                         fieldsHtml += `<div class="col-span-2 flex flex-wrap gap-1 mt-1">${tags}</div>`;
@@ -166,7 +161,7 @@
                     }
                 });
 
-                container.innerHTML += `<div class="bg-white rounded-[2rem] overflow-hidden card-shadow border border-pink-50 relative active:scale-[0.98] transition-all" onclick="openDetail(${idx})">${ribbonHtml} ${hasImg ? headerHtml : ''}<div class="p-5">${titleHtml ? `<div class="mb-3">${titleHtml}</div>` : ''}<div class="grid grid-cols-2 gap-x-4 gap-y-1 items-end">${coupleHtml}${fieldsHtml}</div></div></div>`;
+                container.innerHTML += `<div class="bg-white rounded-[2rem] overflow-hidden card-shadow border border-pink-50 relative active:scale-[0.98] transition-all" onclick="openDetail(${idx})">${ribbonHtml} ${imgVal ? headerHtml : ''}<div class="p-5">${titleHtml ? `<div class="mb-3">${titleHtml}</div>` : ''}<div class="grid grid-cols-2 gap-x-4 gap-y-1 items-end">${coupleHtml}${fieldsHtml}</div></div></div>`;
             });
             renderTagFilters(items, schema);
         }
@@ -178,34 +173,43 @@
             let html = '';
             const imgField = schema.find(f => f.type === 'file');
 
-            html += `<div class="relative mb-12">${item[imgField.id] ? `<img src="${item[imgField.id]}" class="w-full h-[50vh] object-cover rounded-[3rem] shadow-2xl">` : '<div class="no-img-header rounded-[3rem] shadow-inner flex items-center justify-center text-[10px] text-gray-300 font-bold uppercase tracking-widest">Add Photo</div>'}<input type="file" onchange="updateDetailImage(${index}, this)" class="absolute inset-0 opacity-0 cursor-pointer"></div>`;
-            
-            // 画像URL貼り付け欄（詳細ページ内）
-            html += `<div class="mb-10 p-4 bg-gray-50 rounded-2xl border border-gray-100"><label class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Image URL (Direct Link)</label><input type="text" value="${item[imgField.id]?.startsWith('http') ? item[imgField.id] : ''}" onchange="updateDetailField(${index}, '${imgField.id}', this.value); openDetail(${index})" class="w-full bg-white text-xs p-2 rounded-lg border-none outline-none" placeholder="https://example.com/image.jpg"></div>`;
+            // 削除ボタンに関数を紐付け
+            document.getElementById('header-delete-btn').onclick = () => { if(confirm('本当に削除しますか？')) { state.data[state.currentTab].splice(index, 1); saveState(); closeDetail(); render(); } };
+
+            html += `<div class="relative mb-12">${item[imgField.id] ? `<img src="${item[imgField.id]}" class="w-full h-[50vh] object-cover rounded-[3rem] shadow-2xl">` : '<div class="no-img-header rounded-[3rem] shadow-inner flex items-center justify-center text-[10px] text-gray-300 font-bold uppercase tracking-widest h-64 bg-gray-50">Add Photo</div>'}<input type="file" onchange="updateDetailImage(${index}, this)" class="absolute inset-0 opacity-0 cursor-pointer"></div>`;
+            html += `<div class="mb-10 p-4 bg-gray-50 rounded-2xl border border-gray-100"><label class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Image URL</label><input type="text" value="${item[imgField.id]?.startsWith('http') ? item[imgField.id] : ''}" onchange="updateDetailField(${index}, '${imgField.id}', this.value); openDetail(${index})" class="w-full bg-white text-xs p-2 rounded-lg border-none outline-none" placeholder="https://..."></div>`;
 
             if (item[imgField.id]) {
                 html += `<div class="flex items-center gap-4 mb-10 bg-pink-50/50 p-4 rounded-2xl border border-pink-100/50"><label class="text-[9px] font-bold text-pink-400 uppercase tracking-widest">Ribbon Selection</label><select onchange="updateDetailField(${index}, 'ribbonId', this.value)" class="bg-white text-[11px] py-1 px-3 rounded-lg border-none flex-1"><option value="none">None</option>${schema.map(f => f.type !== 'file' ? `<option value="${f.id}" ${item.ribbonId === f.id || (!item.ribbonId && f.isTitle) ? 'selected' : ''}>${f.label}</option>` : '').join('')}</select></div>`;
             }
 
+            // Note以外のフィールドを描画
+            let noteHtml = '';
             schema.forEach((field, i) => {
                 if (field.type === 'file') return;
                 const val = item[field.id] || '';
                 const isVisible = item.visConfig?.[field.id] ?? field.visible;
 
+                if (field.isAccordion) {
+                    noteHtml = `<div class="memo-outer"><label class="text-[10px] text-pink-300 font-extrabold uppercase tracking-[0.5em] block mb-10 text-center">— Note —</label><textarea oninput="updateDetailField(${index}, '${field.id}', this.value); autoGrow(this)" class="auto-expand-input leading-loose text-gray-600 text-base min-h-[500px]" placeholder="思いのままに...">${val}</textarea></div>`;
+                    return;
+                }
+
                 if (field.isTitle) {
                     html += `<div class="flex items-center gap-3 mb-8"><button onclick="toggleCardVis(${i}, ${index})" class="toggle-btn ${isVisible ? 'toggle-on' : 'toggle-off'}">${isVisible ? 'ON' : 'OFF'}</button><textarea oninput="updateDetailField(${index}, '${field.id}', this.value); autoGrow(this)" class="text-3xl font-bold tracking-tight w-full outline-none resize-none overflow-hidden h-auto bg-transparent" placeholder="Untitled">${val}</textarea></div>`;
-                } else if (field.isAccordion) {
-                    html += `<div class="memo-outer"><label class="text-[10px] text-pink-200 font-bold uppercase tracking-[0.5em] block mb-10 text-center">— Note —</label><textarea oninput="updateDetailField(${index}, '${field.id}', this.value); autoGrow(this)" class="auto-expand-input leading-loose text-gray-600 text-base min-h-[500px]" placeholder="...">${val}</textarea></div>`;
                 } else if (field.type === 'url') {
                     html += `<div class="flex items-start py-4 border-b border-gray-50 group gap-2"><button onclick="toggleCardVis(${i}, ${index})" class="toggle-btn flex-shrink-0 mt-2 ${isVisible ? 'toggle-on' : 'toggle-off'}">${isVisible ? 'ON' : 'OFF'}</button><label class="w-24 text-[9px] text-gray-300 font-bold uppercase tracking-widest pt-2.5 flex-shrink-0">${field.label}</label><div class="flex-1"><input type="text" value="${val}" oninput="updateDetailField(${index}, '${field.id}', this.value)" class="inline-input text-xs text-blue-400 underline mb-2 w-full outline-none" placeholder="https://...">${val ? `<div class="link-card"><a href="${val}" target="_blank" class="text-[11px] font-bold text-gray-600 truncate mr-4">Open Link ↗</a><button onclick="copyToClipboard('${val}')" class="text-[8px] text-gray-300 font-bold uppercase tracking-widest">Copy</button></div>`:''}</div></div>`;
                 } else if (field.type === 'date') {
                     html += `<div class="flex items-start py-4 border-b border-gray-50 group gap-2"><button onclick="toggleCardVis(${i}, ${index})" class="toggle-btn flex-shrink-0 mt-2 ${isVisible ? 'toggle-on' : 'toggle-off'}">${isVisible ? 'ON' : 'OFF'}</button><label class="w-24 text-[9px] text-gray-300 font-bold uppercase tracking-widest pt-2.5 flex-shrink-0">${field.label}</label><input type="date" value="${val}" oninput="updateDetailField(${index}, '${field.id}', this.value)" class="auto-expand-input text-sm text-gray-600 font-medium outline-none"></div>`;
                 } else {
-                    html += `<div class="flex items-start py-4 border-b border-gray-50 group gap-2"><div class="flex flex-col gap-1 opacity-0 group-hover:opacity-100"><button onclick="moveDetailField(${index}, ${i}, -1)" class="text-[9px] text-gray-200">▲</button><button onclick="moveDetailField(${index}, ${i}, 1)" class="text-[9px] text-gray-200">▼</button></div><button onclick="toggleCardVis(${i}, ${index})" class="toggle-btn flex-shrink-0 mt-2 ${isVisible ? 'toggle-on' : 'toggle-off'}">${isVisible ? 'ON' : 'OFF'}</button><label class="w-24 text-[9px] text-gray-300 font-bold uppercase tracking-widest pt-2.5 flex-shrink-0">${field.label}</label><textarea oninput="updateDetailField(${index}, '${field.id}', this.value); autoGrow(this)" class="auto-expand-input text-sm text-gray-600 font-medium" rows="1" placeholder="Empty">${val}</textarea><button onclick="removeDetailField(${index}, ${i})" class="text-gray-200 hover:text-red-400 text-lg px-2 opacity-0 group-hover:opacity-100 transition-opacity">×</button></div>`;
+                    html += `<div class="flex items-start py-4 border-b border-gray-50 group gap-2"><div class="flex flex-col gap-1 opacity-0 group-hover:opacity-100"><button onclick="moveDetailField(${index}, ${i}, -1)" class="text-[9px] text-gray-200">▲</button><button onclick="moveDetailField(${index}, ${i}, 1)" class="text-[9px] text-gray-200">▼</button></div><button onclick="toggleCardVis(${i}, ${index})" class="toggle-btn flex-shrink-0 mt-2 ${isVisible ? 'toggle-on' : 'toggle-off'}">${isVisible ? 'ON' : 'OFF'}</button><label class="w-24 text-[9px] text-gray-300 font-bold uppercase tracking-widest pt-2.5 flex-shrink-0">${field.label}</label><textarea oninput="updateDetailField(${index}, '${field.id}', this.value); autoGrow(this)" class="auto-expand-input text-sm text-gray-600 font-medium" rows="1" placeholder="Empty">${val}</textarea><button onclick="removeDetailField(${index}, ${i})" class="text-gray-200 hover:text-red-400 text-lg px-2 opacity-0 group-hover:opacity-100">×</button></div>`;
                 }
             });
 
-            html += `<div class="py-12 flex flex-col items-center gap-10"><button onclick="addDetailField(${index})" class="text-[10px] text-pink-300 font-bold uppercase tracking-widest">+ Add Field</button><button onclick="deleteEntry(${index}); closeDetail()" class="text-[9px] text-gray-100 font-bold uppercase tracking-widest hover:text-red-300">Delete Entry</button></div>`;
+            // Noteを一番最後に配置
+            html += `<div class="py-6 flex justify-center"><button onclick="addDetailField(${index})" class="text-[10px] text-pink-300 font-bold uppercase tracking-widest">+ Add Field</button></div>`;
+            html += noteHtml;
+
             content.innerHTML = html;
             document.querySelectorAll('textarea').forEach(t => autoGrow(t));
             document.getElementById('detail-view').classList.add('open');
@@ -231,7 +235,6 @@
         function moveDetailField(eIdx, fIdx, dir) { const s = state.schemas[state.currentTab]; if(fIdx+dir<0 || fIdx+dir>=s.length) return; [s[fIdx], s[fIdx+dir]] = [s[fIdx+dir], s[fIdx]]; openDetail(eIdx); }
         function addDetailField(eIdx) { state.schemas[state.currentTab].push({ id: 'c'+Date.now(), label: '新規項目', type: 'text', visible: true }); openDetail(eIdx); }
         function removeDetailField(eIdx, fIdx) { if(confirm('Delete?')) { state.schemas[state.currentTab].splice(fIdx, 1); openDetail(eIdx); } }
-        function deleteEntry(i) { if(confirm('削除？')) { state.data[state.currentTab].splice(i, 1); saveState(); render(); } }
         function exportData() { const blob = new Blob([JSON.stringify(state.data)]); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup.json'; a.click(); }
         function exportStandalone() { let h = document.documentElement.outerHTML; const d = `<script>window.PRELOADED_DATA = ${JSON.stringify(state.data)}; window.PRELOADED_SCHEMAS = ${JSON.stringify(state.schemas)};<\/script>`; h = h.replace('</head>', d + '</head>'); const b = new Blob([h], {type: 'text/html'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'Archive_Site.html'; a.click(); }
         function renderSettingsFields() { const c = document.getElementById('settings-fields'); c.innerHTML = ''; state.schemas[state.currentTab].forEach((f, i) => { c.innerHTML += `<div class="settings-card shadow-sm"><div class="flex items-center gap-3"><input type="text" value="${f.label}" onchange="state.schemas[state.currentTab][${i}].label = this.value" class="text-xs font-bold p-3 flex-1 rounded-2xl bg-gray-50 border-none shadow-inner"><button onclick="state.schemas[state.currentTab][${i}].visible = !state.schemas[state.currentTab][${i}].visible; renderSettingsFields()" class="toggle-btn ${f.visible ? 'toggle-on' : 'toggle-off'}">${f.visible ? 'ON' : 'OFF'}</button>${f.isTitle ? '' : `<button onclick="state.schemas[state.currentTab].splice(${i}, 1); renderSettingsFields()" class="text-gray-300 text-xl px-2">×</button>`}</div></div>`; }); }
@@ -247,7 +250,7 @@
             const m = document.createElement('div'); m.className = "fixed inset-0 bg-black/40 flex items-center justify-center z-[70] p-4 backdrop-blur-md"; m.id = "new-entry-modal";
             let f = state.schemas[state.currentTab].map(s => {
                 if(s.type === 'file') return `<div><label class="text-[9px] text-gray-400 font-bold uppercase">${s.label}</label><input type="file" id="new-${s.id}" class="text-xs block mb-2"><input type="text" id="new-url-${s.id}" placeholder="または画像URLを貼り付け" class="w-full border-pink-100 border p-3 rounded-xl text-[11px] mb-4 outline-none"></div>`;
-                if(s.type === 'date') return `<div><label class="text-[9px] text-gray-400 font-bold uppercase">${s.label}</label><input type="date" id="new-${s.id}" class="w-full border-pink-100 border p-3 rounded-xl text-sm mb-4 outline-none"></div>`;
+                if(s.type === 'date') return `<div><label class="text-[9px] text-gray-400 font-bold uppercase">${s.label}</label><input type="date" id="new-${s.id}" class="w-full border-pink-100 border p-3 rounded-xl text-sm outline-none mb-4"></div>`;
                 return `<input type="text" id="new-${s.id}" placeholder="${s.label}" class="w-full border-pink-100 border p-3 rounded-xl text-sm mb-4 outline-none">`;
             }).join('');
             m.innerHTML = `<div class="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl max-h-[90vh] overflow-y-auto"><h2 class="text-xl font-bold mb-6 text-pink-500 uppercase tracking-widest text-center">New Entry</h2><div class="space-y-1">${f}</div><button onclick="saveEntryAction()" class="w-full btn-pink py-4 rounded-2xl font-bold mt-8 uppercase tracking-widest text-sm shadow-xl shadow-pink-100">Save</button><button onclick="this.closest('#new-entry-modal').remove()" class="w-full text-gray-300 text-[10px] font-bold mt-4 uppercase tracking-widest text-center">Cancel</button></div>`;
@@ -256,15 +259,12 @@
         async function saveEntryAction() {
             const item = { visConfig: {} };
             for(const f of state.schemas[state.currentTab]) {
-                const el = document.getElementById(`new-${f.id}`);
-                if(!el) continue;
+                const el = document.getElementById(`new-${f.id}`); if(!el) continue;
                 if(f.type === 'file') {
                     const urlEl = document.getElementById(`new-url-${f.id}`);
                     if(urlEl && urlEl.value) item[f.id] = urlEl.value;
-                    else if(el.files[0]) {
-                        showToast('Compressing...');
-                        item[f.id] = await compressImage(el.files[0]);
-                    } else item[f.id] = '';
+                    else if(el.files[0]) item[f.id] = await compressImage(el.files[0]);
+                    else item[f.id] = '';
                 } else item[f.id] = el.value || '';
             }
             state.data[state.currentTab].push(item);
@@ -273,7 +273,7 @@
     </script>
 
     <div id="settings-modal" class="fixed inset-0 bg-black/40 hidden items-center justify-center z-[70] p-4 backdrop-blur-md text-sm">
-        <div class="bg-white w-full max-w-lg rounded-[2.5rem] p-8 max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div class="bg-white w-full max-w-lg rounded-[2.5rem] p-8 max-h-[90vh] overflow-y-auto">
             <h2 class="text-xl font-bold mb-6 text-pink-500 uppercase tracking-widest text-center">Settings</h2>
             <div id="settings-fields" class="space-y-1"></div>
             <button onclick="state.schemas[state.currentTab].push({ id: 'c'+Date.now(), label: 'New Field', type: 'text', visible: true }); renderSettingsFields();" class="text-[11px] font-bold text-pink-300 mt-8 block uppercase tracking-widest mx-auto">+ Add New Field</button>
