@@ -75,20 +75,20 @@
         const defaultSchemas = {
             works: [{ id: 'name', label: '作品名', type: 'text', visible: true, isTitle: true }, { id: 'media', label: 'メディア', type: 'text', visible: true }, { id: 'period', label: 'ハマった時期', type: 'date', visible: true }, { id: 'url', label: '公式サイト', type: 'url', visible: false }, { id: 'img', label: '画像', type: 'file', visible: true }, { id: 'memo', label: '感想', type: 'textarea', visible: true, isAccordion: true }, { id: 'tags', label: 'タグ', type: 'tags', visible: true }],
             chars: [{ id: 'name', label: 'キャラクター名', type: 'text', visible: true, isTitle: true }, { id: 'work', label: '作品名', type: 'text', visible: true }, { id: 'period', label: 'ハマった時期', type: 'date', visible: true }, { id: 'url', label: 'リンク', type: 'url', visible: false }, { id: 'img', label: '画像', type: 'file', visible: true }, { id: 'memo', label: '感想', type: 'textarea', visible: true, isAccordion: true }, { id: 'tags', label: 'タグ', type: 'tags', visible: true }],
-            couplings: [{ id: 'name', label: 'カップリング名', type: 'text', visible: true, isTitle: true }, { id: 'char1', label: '攻め', type: 'text', visible: true }, { id: 'char2', label: '受け', type: 'text', visible: true }, { id: 'work', label: '作品名', type: 'text', visible: true }, { id: 'period', label: 'ハマった時期', type: 'date', visible: true }, { id: 'url', label: 'リンク', type: 'url', visible: false }, { id: 'img', label: '画像', type: 'file', visible: true }, { id: 'memo', label: '解釈メモ', type: 'textarea', visible: true, isAccordion: true }, { id: 'tags', label: 'タグ', type: 'tags', visible: true }]
+            couplings: [{ id: 'name', label: 'コンビ・カプ', type: 'text', visible: true, isTitle: true }, { id: 'char1', label: 'キャラ1', type: 'text', visible: true }, { id: 'char2', label: 'キャラ2', type: 'text', visible: true }, { id: 'work', label: '作品名', type: 'text', visible: true }, { id: 'period', label: 'ハマった時期', type: 'date', visible: true }, { id: 'url', label: 'リンク', type: 'url', visible: false }, { id: 'img', label: '画像', type: 'file', visible: true }, { id: 'memo', label: '解釈メモ', type: 'textarea', visible: true, isAccordion: true }, { id: 'tags', label: 'タグ', type: 'tags', visible: true }]
         };
 
         // サンプルデータの定義
         const sampleData = {
             works: [
-                { name: "穏やか貴族の休暇のすすめ", media: "小説/漫画", period: "2023-10-01", url: "https://tobooks.shop-pro.jp/?mode=f49", memo: "リゼル様の優雅な休暇に癒される最高の作品。文章がとても綺麗。", tags: "癒やし, 貴族, 異世界", visConfig: {} }
+                { name: "サンプル", media: "小説/漫画", period: "2023-10-01", visConfig: {} }
             ],
             chars: [
-                { name: "リゼル", work: "穏やか貴族", period: "2023-10-05", memo: "圧倒的な主役感。穏やかなのに全てを掌握している感じがたまらない。", tags: "主役, 穏やか, チート", ribbonId: "name", visConfig: {} },
-                { name: "ジル", work: "穏やか貴族", period: "2023-11-12", memo: "リゼル様の最強の護衛。口は悪いけど忠誠心がすごい。", tags: "護衛, 剣士, 忠誠心", ribbonId: "name", visConfig: {} }
+                { name: "太郎", visConfig: {} },
+                { name: "花子", visConfig: {} }
             ],
             couplings: [
-                { name: "主従コンビ", char1: "リゼル", char2: "ジル", work: "穏やか貴族", period: "2024-01-20", memo: "この二人の信頼関係はもはや芸術。距離感が近くて最高。", tags: "信頼関係, 主従, 安定感", visConfig: { name: false } }
+                { name: "花太", char1: "花子", char2: "太郎", work: "サンプル", period: "2024-01-20", visConfig: { name: false } 
             ]
         };
 
