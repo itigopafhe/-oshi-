@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Archive Ultimate v25</title>
+    <title>Archive Ultimate v26</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Noto+Sans+JP:wght@400;700&display=swap');
@@ -15,10 +15,10 @@
         .auto-expand-input { width: 100%; border: 1px solid transparent; padding: 10px; background: transparent; border-radius: 8px; resize: none; overflow: hidden; }
         .auto-expand-input:focus { background: #fff5f7; border-color: #fce7f3; outline: none; }
         
+        /* Note用スペース */
         .memo-outer { margin: 40px -32px 0 -32px; padding: 60px 32px; background-color: #fffafb; border-top: 1px solid #fce7f3; min-height: 600px; }
         .ribbon-label { background: linear-gradient(to right, #f472b6, #fb923c); color: white; font-weight: 700; letter-spacing: 0.1em; border-radius: 4px 14px 14px 4px; box-shadow: 0 4px 12px rgba(244, 114, 182, 0.3); z-index: 20; position: absolute; left: 0; pointer-events: none; }
         .no-img-accent { border-left: 4px solid #fbcfe8; background: linear-gradient(to right, #fff5f7, transparent); padding: 8px 14px; border-radius: 0 10px 10px 0; margin-bottom: 6px; }
-        
         .toggle-btn { padding: 4px 12px; border-radius: 99px; font-size: 8px; font-weight: bold; text-transform: uppercase; transition: 0.2s; }
         .toggle-on { background: #f472b6; color: white; }
         .toggle-off { background: #f3f4f6; color: #9ca3af; }
@@ -27,13 +27,13 @@
         .grid-list { grid-template-columns: 1fr; }
         .grid-normal { grid-template-columns: repeat(2, 1fr); }
         .grid-compact { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
-        .layout-btn { width: 40px; height: 40px; display: flex; items-center; justify-center; border-radius: 12px; color: #d1d5db; transition: 0.2s; }
-        .layout-btn.active { background: #fff1f2; color: #f472b6; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        .layout-btn { width: 42px; height: 42px; display: flex; items-center; justify-center; border-radius: 12px; color: #d1d5db; transition: 0.2s; }
+        .layout-btn.active { background: #fff1f2; color: #f472b6; }
 
-        /* クロップツール */
-        .crop-viewport { position: relative; width: 100%; height: 260px; background: #222; border-radius: 2.5rem; overflow: hidden; touch-action: none; cursor: move; }
-        .crop-img-entity { position: absolute; pointer-events: none; user-select: none; transform-origin: center center; }
-        .crop-overlay { position: absolute; inset: 0; pointer-events: none; border: 2px solid #f472b6; border-radius: 2.5rem; box-shadow: 0 0 0 1000px rgba(0,0,0,0.5); }
+        /* クロップツールUI：Viewportはカード比率に合わせる */
+        .crop-viewport { position: relative; width: 100%; height: 260px; background: #f8fafc; border-radius: 2.5rem; overflow: hidden; touch-action: none; cursor: move; border: 1px solid #fce7f3; }
+        .crop-img-entity { position: absolute; pointer-events: none; user-select: none; transform-origin: center center; width: 100%; height: 100%; object-fit: contain; }
+        .crop-overlay { position: absolute; inset: 0; pointer-events: none; border: 2.5px solid #f472b6; border-radius: 2.5rem; box-shadow: 0 0 0 1000px rgba(255,255,255,0.7); }
         
         .btn-shuffle { background: white; color: #f472b6; border: 1px solid #fce7f3; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; border-radius: 14px; transition: 0.2s; }
         @keyframes dice-shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-15deg); } 75% { transform: rotate(15deg); } }
@@ -48,8 +48,8 @@
     <div class="w-full h-44 bg-pink-200 flex items-center justify-center relative overflow-hidden">
         <div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image: url('https://images.unsplash.com/photo-1516550893923-42d28e5677af?auto=format&fit=crop&q=80&w=1000');"></div>
         <div class="absolute top-6 right-6 flex gap-4 z-20">
-            <button onclick="createShareLink()" class="text-[10px] font-extrabold text-pink-600 bg-white/90 px-4 py-2 rounded-lg shadow-sm tracking-widest">SHARE</button>
-            <button onclick="exportStandalone()" class="text-[10px] font-extrabold text-pink-600 bg-white/90 px-4 py-2 rounded-lg shadow-sm tracking-widest">SITE</button>
+            <button onclick="createShareLink()" class="text-[10px] font-extrabold text-pink-600 bg-white/90 px-4 py-2 rounded-lg shadow-sm">SHARE</button>
+            <button onclick="exportStandalone()" class="text-[10px] font-extrabold text-pink-600 bg-white/90 px-4 py-2 rounded-lg shadow-sm">SITE</button>
         </div>
         <h1 class="relative text-2xl font-bold text-white tracking-[0.4em] uppercase drop-shadow-md">Archive</h1>
     </div>
@@ -140,12 +140,14 @@
                 const getVis = (fid) => item.visConfig?.[fid] ?? schema.find(s=>s.id===fid).visible;
 
                 if (imgField.visible && imgVal) {
-                    const tx = item.tx ?? 0, ty = item.ty ?? 0, ts = item.ts ?? 1;
                     const hClass = state.layoutMode === 'compact' ? 'h-28' : (state.layoutMode === 'normal' ? 'h-44' : 'h-80');
                     if (imgVal.includes('x.com') || imgVal.includes('twitter.com')) {
-                        headerHtml = `<div class="w-full ${hClass} bg-pink-50 flex items-center justify-center border-b border-pink-100"><a href="${imgVal}" target="_blank" class="bg-white text-pink-400 text-[8px] font-extrabold px-3 py-1.5 rounded-full border border-pink-100 uppercase">View X</a></div>`;
+                        headerHtml = `<div class="w-full ${hClass} bg-pink-50 flex items-center justify-center border-b border-pink-100"><a href="${imgVal}" target="_blank" class="bg-white text-pink-400 text-[8px] font-extrabold px-3 py-1.5 rounded-full border border-pink-100">X ↗</a></div>`;
                     } else {
-                        headerHtml = `<div class="w-full ${hClass} overflow-hidden border-b border-pink-50 relative"><img src="${imgVal}" class="absolute w-full h-full object-contain" style="transform: translate(${tx}px, ${ty}px) scale(${ts});"></div>`;
+                        // 1:1同期表示：エディタで保存した倍率(ts)と位置(tx, ty %)を使用
+                        headerHtml = `<div class="w-full ${hClass} overflow-hidden border-b border-pink-50 relative">
+                            <img src="${imgVal}" class="absolute w-full h-full object-contain" style="transform: translate(${item.tx || 0}%, ${item.ty || 0}%) scale(${item.ts || 1});">
+                        </div>`;
                     }
                     if (item.ribbonId !== 'none') {
                         const rField = schema.find(f => f.id === (item.ribbonId || schema.find(s=>s.isTitle).id));
@@ -186,10 +188,10 @@
 
             let imgHtml = `<div class="mb-10 p-4 bg-gray-50 rounded-[2.5rem] border border-pink-50 relative">`;
             if (item[imgId]) {
-                const ts = item.ts ?? 1;
+                const ts = item.ts || 1; const tx = item.tx || 0; const ty = item.ty || 0;
                 imgHtml += `
                 <div class="crop-viewport shadow-inner" id="crop-area">
-                    <img id="crop-img" src="${item[imgId]}" class="crop-img-entity" style="width:100%; height:100%; object-fit:contain; transform: translate(${item.tx || 0}px, ${item.ty || 0}px) scale(${ts});">
+                    <img id="crop-img" src="${item[imgId]}" class="crop-img-entity" style="transform: translate(${tx}%, ${ty}%) scale(${ts});">
                     <div class="crop-overlay"></div>
                 </div>
                 <div class="mt-8 px-6 space-y-2">
@@ -197,8 +199,8 @@
                     <input type="range" min="1" max="6" step="0.05" value="${ts}" oninput="updateZoom(${index}, this.value)">
                 </div>
                 <div class="absolute top-8 right-8 flex gap-2 z-[110]">
-                    <label class="bg-white/90 backdrop-blur-md text-pink-500 text-[8px] font-extrabold px-3 py-2 rounded-full cursor-pointer shadow-lg border border-pink-100">CHANGE<input type="file" onchange="updateDetailImage(${index}, this)" class="hidden"></label>
-                    <button onclick="updateDetailField(${index}, '${imgId}', ''); openDetail(${index}); event.stopPropagation();" class="bg-red-500 text-white text-[8px] font-extrabold px-3 py-2 rounded-full shadow-lg">REMOVE</button>
+                    <label class="bg-white/90 backdrop-blur-md text-pink-500 text-[8px] font-extrabold px-4 py-2 rounded-full cursor-pointer shadow-lg">CHANGE<input type="file" onchange="updateDetailImage(${index}, this)" class="hidden"></label>
+                    <button onclick="updateDetailField(${index}, '${imgId}', ''); openDetail(${index}); event.stopPropagation();" class="bg-red-500 text-white text-[8px] font-extrabold px-4 py-2 rounded-full shadow-lg">REMOVE</button>
                 </div>`;
             } else {
                 imgHtml += `<div class="h-48 flex flex-col items-center justify-center border-2 border-dashed border-pink-100 rounded-[2rem] bg-white relative">
@@ -208,7 +210,7 @@
             }
             imgHtml += `</div>`;
 
-            let fieldsHtml = `<div class="mb-10 p-4 bg-gray-100/40 rounded-2xl border border-gray-100"><label class="text-[9px] text-gray-400 font-bold block mb-2 uppercase tracking-tighter">Direct URL</label><input type="text" value="${item[imgId]?.startsWith('http')?item[imgId]:''}" onchange="updateDetailField(${index}, '${imgId}', this.value); openDetail(${index})" class="w-full bg-white text-xs p-2 rounded-lg border-none outline-none"></div>`;
+            let fieldsHtml = `<div class="mb-10 p-4 bg-gray-100/40 rounded-2xl border border-gray-100"><label class="text-[9px] text-gray-400 font-bold block mb-2 uppercase tracking-tighter">Image URL</label><input type="text" value="${item[imgId]?.startsWith('http')?item[imgId]:''}" onchange="updateDetailField(${index}, '${imgId}', this.value); openDetail(${index})" class="w-full bg-white text-xs p-2 rounded-lg border-none outline-none"></div>`;
 
             let noteHtml = '';
             schema.forEach((field, i) => {
@@ -221,8 +223,8 @@
                 } else {
                     fieldsHtml += `<div class="flex items-start py-4 border-b border-gray-50 group gap-2">
                         <div class="flex flex-col gap-1 pr-1">
-                            <button onclick="moveDetailField(${index}, ${i}, -1)" class="text-[10px] text-pink-300 font-bold">▲</button>
-                            <button onclick="moveDetailField(${index}, ${i}, 1)" class="text-[10px] text-pink-300 font-bold">▼</button>
+                            <button onclick="moveDetailField(${index}, ${i}, -1)" class="text-[12px] text-pink-400 font-black px-1">▲</button>
+                            <button onclick="moveDetailField(${index}, ${i}, 1)" class="text-[12px] text-pink-400 font-black px-1">▼</button>
                         </div>
                         <button onclick="toggleCardVis(${i}, ${index})" class="toggle-btn flex-shrink-0 mt-2 ${isVisible ? 'toggle-on' : 'toggle-off'}">${isVisible ? 'ON' : 'OFF'}</button>
                         <label class="w-20 text-[9px] text-gray-300 font-bold uppercase tracking-widest pt-2.5 flex-shrink-0">${field.label}</label>
@@ -233,11 +235,12 @@
 
             content.innerHTML = imgHtml + fieldsHtml + `<div class="py-6 flex justify-center"><button onclick="addDetailField(${index})" class="text-[10px] text-pink-300 font-bold uppercase">+ Add Field</button></div>` + noteHtml;
             document.querySelectorAll('textarea').forEach(t => autoGrow(t));
-            initPhotoAppDrag(index);
+            initProfessionalDrag(index);
             document.getElementById('detail-view').classList.add('open');
             document.body.style.overflow = 'hidden';
         }
 
+        // 確実な並び替えロジック
         function moveDetailField(entryIdx, fieldIdx, dir) {
             const schema = state.schemas[state.currentTab];
             if (fieldIdx + dir < 0 || fieldIdx + dir >= schema.length) return;
@@ -245,7 +248,7 @@
             saveState(); openDetail(entryIdx); render();
         }
 
-        function initPhotoAppDrag(idx) {
+        function initProfessionalDrag(idx) {
             const area = document.getElementById('crop-area');
             const img = document.getElementById('crop-img');
             if(!area || !img) return;
@@ -255,8 +258,10 @@
             const move = (e) => {
                 if(!isDragging) return;
                 const p = e.touches ? e.touches[0] : e;
-                tx += (p.clientX - sx); ty += (p.clientY - sy);
-                img.style.transform = `translate(${tx}px, ${ty}px) scale(${state.data[state.currentTab][idx].ts || 1})`;
+                // パーセンテージで移動量を計算（画面幅に依存しない）
+                tx += (p.clientX - sx) / area.offsetWidth * 100;
+                ty += (p.clientY - sy) / area.offsetHeight * 100;
+                img.style.transform = `translate(${tx}%, ${ty}%) scale(${state.data[state.currentTab][idx].ts || 1})`;
                 sx = p.clientX; sy = p.clientY;
             };
             const end = () => { if(isDragging) { isDragging = false; updateDetailField(idx, 'tx', tx); updateDetailField(idx, 'ty', ty); } };
@@ -268,7 +273,7 @@
         function updateZoom(idx, val) {
             state.data[state.currentTab][idx].ts = parseFloat(val);
             const img = document.getElementById('crop-img');
-            if(img) img.style.transform = `translate(${state.data[state.currentTab][idx].tx || 0}px, ${state.data[state.currentTab][idx].ty || 0}px) scale(${val})`;
+            if(img) img.style.transform = `translate(${state.data[state.currentTab][idx].tx || 0}%, ${state.data[state.currentTab][idx].ty || 0}%) scale(${val})`;
             saveState();
         }
 
@@ -298,9 +303,9 @@
             const c = document.getElementById('settings-fields'); c.innerHTML = '';
             state.schemas[state.currentTab].forEach((f, i) => {
                 c.innerHTML += `<div class="flex items-center gap-3 mb-3 p-3 bg-gray-50 rounded-2xl">
-                    <input type="text" value="${f.label}" onchange="state.schemas[state.currentTab][${i}].label=this.value" class="text-xs p-2 flex-1 bg-white border-none rounded-lg">
+                    <input type="text" value="${f.label}" onchange="state.schemas[state.currentTab][${i}].label=this.value" class="text-xs p-2 flex-1 bg-white border-none rounded-lg shadow-inner">
                     <button onclick="state.schemas[state.currentTab][${i}].visible=!state.schemas[state.currentTab][${i}].visible;renderSettingsFields()" class="toggle-btn ${f.visible?'toggle-on':'toggle-off'}">${f.visible?'ON':'OFF'}</button>
-                    ${f.isTitle ? '' : `<button onclick="if(confirm('削除？')){state.schemas[state.currentTab].splice(${i},1);renderSettingsFields()}" class="text-gray-300 font-bold px-2">×</button>`}
+                    ${f.isTitle ? '' : `<button onclick="if(confirm('削除？')){state.schemas[state.currentTab].splice(${i},1);renderSettingsFields()}" class="text-gray-300 px-2 font-bold">×</button>`}
                 </div>`;
             });
         }
@@ -321,7 +326,7 @@
                 const dl = (s.id === 'work' || s.label.includes('作品')) ? 'list="datalist-works"' : ((s.label.includes('キャラ') || s.label.includes('名前')) ? 'list="datalist-chars"' : '');
                 return `<input type="text" id="new-${s.id}" ${dl} placeholder="${s.label}" class="w-full border-pink-100 border p-3 rounded-xl text-sm mb-4 outline-none">`;
             }).join('');
-            m.innerHTML = `<div class="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl max-h-[90vh] overflow-y-auto"><h2 class="text-xl font-bold mb-6 text-pink-500 uppercase tracking-widest text-center">New</h2><div class="space-y-1">${f}</div><button onclick="saveEntryAction()" class="w-full btn-pink py-4 rounded-2xl font-bold mt-8 uppercase tracking-widest text-sm">Save</button><button onclick="this.closest('#new-entry-modal').remove()" class="w-full text-gray-300 text-[10px] font-bold mt-4 uppercase tracking-widest text-center">Cancel</button></div>`;
+            m.innerHTML = `<div class="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl max-h-[90vh] overflow-y-auto"><h2 class="text-xl font-bold mb-6 text-pink-500 uppercase tracking-widest text-center">New</h2><div class="space-y-1">${f}</div><button onclick="saveEntryAction()" class="w-full btn-pink py-4 rounded-2xl font-bold mt-8 uppercase tracking-widest text-sm shadow-xl shadow-pink-100">Save</button><button onclick="this.closest('#new-entry-modal').remove()" class="w-full text-gray-300 text-[10px] font-bold mt-4 uppercase tracking-widest text-center">Cancel</button></div>`;
             document.body.appendChild(m);
         }
         async function saveEntryAction() {
