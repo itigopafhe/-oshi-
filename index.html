@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Archive Ultimate v26</title>
+    <title>Archive Ultimate v27</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Noto+Sans+JP:wght@400;700&display=swap');
@@ -19,6 +19,7 @@
         .memo-outer { margin: 40px -32px 0 -32px; padding: 60px 32px; background-color: #fffafb; border-top: 1px solid #fce7f3; min-height: 600px; }
         .ribbon-label { background: linear-gradient(to right, #f472b6, #fb923c); color: white; font-weight: 700; letter-spacing: 0.1em; border-radius: 4px 14px 14px 4px; box-shadow: 0 4px 12px rgba(244, 114, 182, 0.3); z-index: 20; position: absolute; left: 0; pointer-events: none; }
         .no-img-accent { border-left: 4px solid #fbcfe8; background: linear-gradient(to right, #fff5f7, transparent); padding: 8px 14px; border-radius: 0 10px 10px 0; margin-bottom: 6px; }
+
         .toggle-btn { padding: 4px 12px; border-radius: 99px; font-size: 8px; font-weight: bold; text-transform: uppercase; transition: 0.2s; }
         .toggle-on { background: #f472b6; color: white; }
         .toggle-off { background: #f3f4f6; color: #9ca3af; }
@@ -30,17 +31,17 @@
         .layout-btn { width: 42px; height: 42px; display: flex; items-center; justify-center; border-radius: 12px; color: #d1d5db; transition: 0.2s; }
         .layout-btn.active { background: #fff1f2; color: #f472b6; }
 
-        /* クロップツールUI：Viewportはカード比率に合わせる */
-        .crop-viewport { position: relative; width: 100%; height: 260px; background: #f8fafc; border-radius: 2.5rem; overflow: hidden; touch-action: none; cursor: move; border: 1px solid #fce7f3; }
-        .crop-img-entity { position: absolute; pointer-events: none; user-select: none; transform-origin: center center; width: 100%; height: 100%; object-fit: contain; }
-        .crop-overlay { position: absolute; inset: 0; pointer-events: none; border: 2.5px solid #f472b6; border-radius: 2.5rem; box-shadow: 0 0 0 1000px rgba(255,255,255,0.7); }
+        /* クロップツールUI */
+        .crop-viewport { position: relative; width: 100%; height: 260px; background: #222; border-radius: 2.5rem; overflow: hidden; touch-action: none; cursor: move; }
+        .crop-img-entity { position: absolute; pointer-events: none; user-select: none; transform-origin: center center; width: 100%; height: 100%; object-fit: cover; } /* 初期状態はcover */
+        .crop-overlay { position: absolute; inset: 0; pointer-events: none; border: 2.5px solid #f472b6; border-radius: 2.5rem; box-shadow: 0 0 0 1000px rgba(0,0,0,0.5); }
         
         .btn-shuffle { background: white; color: #f472b6; border: 1px solid #fce7f3; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; border-radius: 14px; transition: 0.2s; }
         @keyframes dice-shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-15deg); } 75% { transform: rotate(15deg); } }
         .dice-anim { animation: dice-shake 0.4s ease-in-out; }
 
         input[type=range] { -webkit-appearance: none; background: #f3f4f6; height: 6px; border-radius: 3px; width: 100%; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: #f472b6; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.1); cursor: pointer; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: #f472b6; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.1); cursor: pointer; }
     </style>
 </head>
 <body class="pb-24">
@@ -142,12 +143,11 @@
                 if (imgField.visible && imgVal) {
                     const hClass = state.layoutMode === 'compact' ? 'h-28' : (state.layoutMode === 'normal' ? 'h-44' : 'h-80');
                     if (imgVal.includes('x.com') || imgVal.includes('twitter.com')) {
-                        headerHtml = `<div class="w-full ${hClass} bg-pink-50 flex items-center justify-center border-b border-pink-100"><a href="${imgVal}" target="_blank" class="bg-white text-pink-400 text-[8px] font-extrabold px-3 py-1.5 rounded-full border border-pink-100">X ↗</a></div>`;
+                        headerHtml = `<div class="w-full ${hClass} bg-pink-50 flex items-center justify-center border-b border-pink-100"><a href="${imgVal}" target="_blank" class="bg-white text-pink-400 text-[8px] font-extrabold px-3 py-1.5 rounded-full border border-pink-100 uppercase">View X</a></div>`;
                     } else {
-                        // 1:1同期表示：エディタで保存した倍率(ts)と位置(tx, ty %)を使用
-                        headerHtml = `<div class="w-full ${hClass} overflow-hidden border-b border-pink-50 relative">
-                            <img src="${imgVal}" class="absolute w-full h-full object-contain" style="transform: translate(${item.tx || 0}%, ${item.ty || 0}%) scale(${item.ts || 1});">
-                        </div>`;
+                        // 初期状態(ts=1, tx=0, ty=0)なら中心に自動収まるようにobject-fit: coverを使用
+                        const tx = item.tx ?? 0, ty = item.ty ?? 0, ts = item.ts ?? 1;
+                        headerHtml = `<div class="w-full ${hClass} overflow-hidden border-b border-pink-50 relative"><img src="${imgVal}" class="absolute w-full h-full ${ts === 1 && tx === 0 && ty === 0 ? 'object-cover' : 'object-contain'}" style="transform: translate(${tx}%, ${ty}%) scale(${ts});"></div>`;
                     }
                     if (item.ribbonId !== 'none') {
                         const rField = schema.find(f => f.id === (item.ribbonId || schema.find(s=>s.isTitle).id));
@@ -199,8 +199,8 @@
                     <input type="range" min="1" max="6" step="0.05" value="${ts}" oninput="updateZoom(${index}, this.value)">
                 </div>
                 <div class="absolute top-8 right-8 flex gap-2 z-[110]">
-                    <label class="bg-white/90 backdrop-blur-md text-pink-500 text-[8px] font-extrabold px-4 py-2 rounded-full cursor-pointer shadow-lg">CHANGE<input type="file" onchange="updateDetailImage(${index}, this)" class="hidden"></label>
-                    <button onclick="updateDetailField(${index}, '${imgId}', ''); openDetail(${index}); event.stopPropagation();" class="bg-red-500 text-white text-[8px] font-extrabold px-4 py-2 rounded-full shadow-lg">REMOVE</button>
+                    <label class="bg-white/90 backdrop-blur-md text-pink-500 text-[8px] font-extrabold px-3 py-2 rounded-full cursor-pointer shadow-lg border border-pink-100">CHANGE<input type="file" onchange="updateDetailImage(${index}, this)" class="hidden"></label>
+                    <button onclick="updateDetailField(${index}, '${imgId}', ''); openDetail(${index}); event.stopPropagation();" class="bg-red-500 text-white text-[8px] font-extrabold px-3 py-2 rounded-full shadow-lg">REMOVE</button>
                 </div>`;
             } else {
                 imgHtml += `<div class="h-48 flex flex-col items-center justify-center border-2 border-dashed border-pink-100 rounded-[2rem] bg-white relative">
@@ -223,8 +223,8 @@
                 } else {
                     fieldsHtml += `<div class="flex items-start py-4 border-b border-gray-50 group gap-2">
                         <div class="flex flex-col gap-1 pr-1">
-                            <button onclick="moveDetailField(${index}, ${i}, -1)" class="text-[12px] text-pink-400 font-black px-1">▲</button>
-                            <button onclick="moveDetailField(${index}, ${i}, 1)" class="text-[12px] text-pink-400 font-black px-1">▼</button>
+                            <button onclick="moveDetailField(${index}, ${i}, -1)" class="text-[10px] text-pink-300 font-bold">▲</button>
+                            <button onclick="moveDetailField(${index}, ${i}, 1)" class="text-[10px] text-pink-300 font-bold">▼</button>
                         </div>
                         <button onclick="toggleCardVis(${i}, ${index})" class="toggle-btn flex-shrink-0 mt-2 ${isVisible ? 'toggle-on' : 'toggle-off'}">${isVisible ? 'ON' : 'OFF'}</button>
                         <label class="w-20 text-[9px] text-gray-300 font-bold uppercase tracking-widest pt-2.5 flex-shrink-0">${field.label}</label>
@@ -240,7 +240,6 @@
             document.body.style.overflow = 'hidden';
         }
 
-        // 確実な並び替えロジック
         function moveDetailField(entryIdx, fieldIdx, dir) {
             const schema = state.schemas[state.currentTab];
             if (fieldIdx + dir < 0 || fieldIdx + dir >= schema.length) return;
@@ -258,7 +257,6 @@
             const move = (e) => {
                 if(!isDragging) return;
                 const p = e.touches ? e.touches[0] : e;
-                // パーセンテージで移動量を計算（画面幅に依存しない）
                 tx += (p.clientX - sx) / area.offsetWidth * 100;
                 ty += (p.clientY - sy) / area.offsetHeight * 100;
                 img.style.transform = `translate(${tx}%, ${ty}%) scale(${state.data[state.currentTab][idx].ts || 1})`;
@@ -303,11 +301,21 @@
             const c = document.getElementById('settings-fields'); c.innerHTML = '';
             state.schemas[state.currentTab].forEach((f, i) => {
                 c.innerHTML += `<div class="flex items-center gap-3 mb-3 p-3 bg-gray-50 rounded-2xl">
-                    <input type="text" value="${f.label}" onchange="state.schemas[state.currentTab][${i}].label=this.value" class="text-xs p-2 flex-1 bg-white border-none rounded-lg shadow-inner">
+                    <div class="flex flex-col gap-1 pr-1">
+                        <button onclick="moveFieldSettings(${i}, -1)" class="text-[10px] text-pink-400 font-bold">▲</button>
+                        <button onclick="moveFieldSettings(${i}, 1)" class="text-[10px] text-pink-400 font-bold">▼</button>
+                    </div>
+                    <input type="text" value="${f.label}" onchange="state.schemas[state.currentTab][${i}].label=this.value" class="text-xs p-2 flex-1 bg-white border-none rounded-lg">
                     <button onclick="state.schemas[state.currentTab][${i}].visible=!state.schemas[state.currentTab][${i}].visible;renderSettingsFields()" class="toggle-btn ${f.visible?'toggle-on':'toggle-off'}">${f.visible?'ON':'OFF'}</button>
-                    ${f.isTitle ? '' : `<button onclick="if(confirm('削除？')){state.schemas[state.currentTab].splice(${i},1);renderSettingsFields()}" class="text-gray-300 px-2 font-bold">×</button>`}
+                    ${f.isTitle ? '' : `<button onclick="if(confirm('削除？')){state.schemas[state.currentTab].splice(${i},1);renderSettingsFields()}" class="text-gray-300 font-bold px-2">×</button>`}
                 </div>`;
             });
+        }
+        function moveFieldSettings(i, dir) {
+            const s = state.schemas[state.currentTab];
+            if (i + dir < 0 || i + dir >= s.length) return;
+            [s[i], s[i + dir]] = [s[i + dir], s[i]];
+            saveState(); renderSettingsFields(); render();
         }
         function renderTagFilters() { const tagSet = new Set(); const tf = state.schemas[state.currentTab].find(f => f.type === 'tags'); state.data[state.currentTab].forEach(item => { if (tf && item[tf.id]) item[tf.id].split(',').forEach(t => tagSet.add(t.trim())); }); const fc = document.getElementById('filter-tags'); fc.innerHTML = `<span onclick="state.activeTag=null;render()" class="tag-chip ${!state.activeTag ? 'bg-pink-400 text-white' : 'bg-gray-100 text-gray-400'}">すべて</span>`; tagSet.forEach(tag => fc.innerHTML += `<span onclick="state.activeTag='${tag}';render()" class="tag-chip ${state.activeTag===tag?'bg-pink-400 text-white':'bg-white text-pink-400'}">${tag}</span>`); }
 
@@ -326,7 +334,7 @@
                 const dl = (s.id === 'work' || s.label.includes('作品')) ? 'list="datalist-works"' : ((s.label.includes('キャラ') || s.label.includes('名前')) ? 'list="datalist-chars"' : '');
                 return `<input type="text" id="new-${s.id}" ${dl} placeholder="${s.label}" class="w-full border-pink-100 border p-3 rounded-xl text-sm mb-4 outline-none">`;
             }).join('');
-            m.innerHTML = `<div class="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl max-h-[90vh] overflow-y-auto"><h2 class="text-xl font-bold mb-6 text-pink-500 uppercase tracking-widest text-center">New</h2><div class="space-y-1">${f}</div><button onclick="saveEntryAction()" class="w-full btn-pink py-4 rounded-2xl font-bold mt-8 uppercase tracking-widest text-sm shadow-xl shadow-pink-100">Save</button><button onclick="this.closest('#new-entry-modal').remove()" class="w-full text-gray-300 text-[10px] font-bold mt-4 uppercase tracking-widest text-center">Cancel</button></div>`;
+            m.innerHTML = `<div class="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl max-h-[90vh] overflow-y-auto"><h2 class="text-xl font-bold mb-6 text-pink-500 uppercase tracking-widest text-center">New</h2><div class="space-y-1">${f}</div><button onclick="saveEntryAction()" class="w-full btn-pink py-4 rounded-2xl font-bold mt-8 uppercase tracking-widest text-sm">Save</button><button onclick="this.closest('#new-entry-modal').remove()" class="w-full text-gray-300 text-[10px] font-bold mt-4 uppercase tracking-widest text-center">Cancel</button></div>`;
             document.body.appendChild(m);
         }
         async function saveEntryAction() {
