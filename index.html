@@ -2,8 +2,8 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Archive Ultimate v16</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Archive Ultimate v25</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Noto+Sans+JP:wght@400;700&display=swap');
@@ -14,31 +14,42 @@
         #detail-view.open { transform: translateY(0); }
         .auto-expand-input { width: 100%; border: 1px solid transparent; padding: 10px; background: transparent; border-radius: 8px; resize: none; overflow: hidden; }
         .auto-expand-input:focus { background: #fff5f7; border-color: #fce7f3; outline: none; }
-        .memo-outer { margin: 40px -32px 0 -32px; padding: 40px 32px; background-color: #fffafb; border-top: 1px solid #fce7f3; min-height: 500px; }
-        .ribbon-label { background: linear-gradient(to right, #f472b6, #fb923c); color: white; font-weight: 700; letter-spacing: 0.1em; border-radius: 4px 14px 14px 4px; box-shadow: 0 4px 12px rgba(244, 114, 182, 0.3); z-index: 20; position: absolute; left: 0; }
-        .no-img-accent { border-left: 3px solid #fbcfe8; background: linear-gradient(to right, #fff5f7, transparent); padding: 4px 8px; border-radius: 0 8px 8px 0; margin-bottom: 2px; }
-        .tag-chip { font-size: 8px; padding: 1px 6px; border-radius: 99px; background: #fff1f2; color: #f43f5e; border: 1px solid #ffe4e6; cursor: pointer; }
-        .toggle-btn { padding: 4px 10px; border-radius: 99px; font-size: 8px; font-weight: bold; text-transform: uppercase; transition: 0.2s; }
+        
+        .memo-outer { margin: 40px -32px 0 -32px; padding: 60px 32px; background-color: #fffafb; border-top: 1px solid #fce7f3; min-height: 600px; }
+        .ribbon-label { background: linear-gradient(to right, #f472b6, #fb923c); color: white; font-weight: 700; letter-spacing: 0.1em; border-radius: 4px 14px 14px 4px; box-shadow: 0 4px 12px rgba(244, 114, 182, 0.3); z-index: 20; position: absolute; left: 0; pointer-events: none; }
+        .no-img-accent { border-left: 4px solid #fbcfe8; background: linear-gradient(to right, #fff5f7, transparent); padding: 8px 14px; border-radius: 0 10px 10px 0; margin-bottom: 6px; }
+        
+        .toggle-btn { padding: 4px 12px; border-radius: 99px; font-size: 8px; font-weight: bold; text-transform: uppercase; transition: 0.2s; }
         .toggle-on { background: #f472b6; color: white; }
         .toggle-off { background: #f3f4f6; color: #9ca3af; }
-        .top-nav-btn { font-size: 9px; font-weight: 800; color: #ec4899; letter-spacing: 0.05em; display: flex; align-items: center; gap: 4px; }
+
+        /* レイアウト */
         .grid-list { grid-template-columns: 1fr; }
         .grid-normal { grid-template-columns: repeat(2, 1fr); }
-        .grid-compact { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
-        .layout-btn { width: 36px; height: 36px; display: flex; items-center; justify-center; border-radius: 8px; transition: 0.2s; color: #d1d5db; }
-        .layout-btn.active { background: #fff1f2; color: #f472b6; }
-        .count-badge { font-size: 9px; background: #fce7f3; color: #f472b6; padding: 1px 6px; border-radius: 6px; margin-left: 4px; font-weight: 800; vertical-align: middle; }
-        .star-pin { position: absolute; top: 10px; right: 10px; color: #fbbf24; z-index: 20; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+        .grid-compact { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+        .layout-btn { width: 40px; height: 40px; display: flex; items-center; justify-center; border-radius: 12px; color: #d1d5db; transition: 0.2s; }
+        .layout-btn.active { background: #fff1f2; color: #f472b6; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+
+        /* クロップツール */
+        .crop-viewport { position: relative; width: 100%; height: 260px; background: #222; border-radius: 2.5rem; overflow: hidden; touch-action: none; cursor: move; }
+        .crop-img-entity { position: absolute; pointer-events: none; user-select: none; transform-origin: center center; }
+        .crop-overlay { position: absolute; inset: 0; pointer-events: none; border: 2px solid #f472b6; border-radius: 2.5rem; box-shadow: 0 0 0 1000px rgba(0,0,0,0.5); }
+        
+        .btn-shuffle { background: white; color: #f472b6; border: 1px solid #fce7f3; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; border-radius: 14px; transition: 0.2s; }
+        @keyframes dice-shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-15deg); } 75% { transform: rotate(15deg); } }
+        .dice-anim { animation: dice-shake 0.4s ease-in-out; }
+
+        input[type=range] { -webkit-appearance: none; background: #f3f4f6; height: 6px; border-radius: 3px; width: 100%; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: #f472b6; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.1); cursor: pointer; }
     </style>
 </head>
 <body class="pb-24">
 
     <div class="w-full h-44 bg-pink-200 flex items-center justify-center relative overflow-hidden">
         <div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image: url('https://images.unsplash.com/photo-1516550893923-42d28e5677af?auto=format&fit=crop&q=80&w=1000');"></div>
-        <div class="absolute top-6 right-6 flex gap-5 z-20">
-            <button onclick="createShareLink()" class="top-nav-btn"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>SHARE</button>
-            <button onclick="exportStandalone()" class="top-nav-btn"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>SITE</button>
-            <button onclick="exportData()" class="top-nav-btn"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>BACKUP</button>
+        <div class="absolute top-6 right-6 flex gap-4 z-20">
+            <button onclick="createShareLink()" class="text-[10px] font-extrabold text-pink-600 bg-white/90 px-4 py-2 rounded-lg shadow-sm tracking-widest">SHARE</button>
+            <button onclick="exportStandalone()" class="text-[10px] font-extrabold text-pink-600 bg-white/90 px-4 py-2 rounded-lg shadow-sm tracking-widest">SITE</button>
         </div>
         <h1 class="relative text-2xl font-bold text-white tracking-[0.4em] uppercase drop-shadow-md">Archive</h1>
     </div>
@@ -46,34 +57,34 @@
     <div class="max-w-2xl mx-auto px-6 mt-6">
         <div class="flex gap-2 mb-4">
             <input type="text" id="search-bar" oninput="render()" placeholder="検索..." class="bg-white border-none py-3 rounded-xl shadow-sm flex-1 px-4 text-sm outline-none">
-            <button onclick="randomPick()" class="bg-white px-3 rounded-xl shadow-sm text-lg active:scale-90 transition-transform" title="ランダム表示">🎲</button>
-            <div class="flex bg-white rounded-xl shadow-sm p-1 gap-0.5">
-                <button onclick="setLayout('list')" id="btn-layout-list" class="layout-btn"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
-                <button onclick="setLayout('normal')" id="btn-layout-normal" class="layout-btn"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg></button>
-                <button onclick="setLayout('compact')" id="btn-layout-compact" class="layout-btn"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM11 5a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1V5zM18 5a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1V5zM4 12a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1v-2zM11 12a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2zM18 12a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2zM4 19a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1-0 01-1-1v-2zM11 19a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2zM18 19a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2z"></path></svg></button>
+            <button onclick="randomPickAnimated(this)" class="btn-shuffle card-shadow">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4" stroke-width="2.5"></rect><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"></circle><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"></circle><circle cx="12" cy="12" r="1.2" fill="currentColor"></circle><circle cx="15.5" cy="8.5" r="1.2" fill="currentColor"></circle><circle cx="8.5" cy="15.5" r="1.2" fill="currentColor"></circle></svg>
+            </button>
+            <div class="flex bg-white rounded-2xl shadow-sm p-1 gap-1">
+                <button onclick="setLayout('list')" id="btn-layout-list" class="layout-btn"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+                <button onclick="setLayout('normal')" id="btn-layout-normal" class="layout-btn"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 6h6v6H4zM14 6h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"></path></svg></button>
+                <button onclick="setLayout('compact')" id="btn-layout-compact" class="layout-btn"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 4h4v4H4zM10 4h4v4h-4zM16 4h4v4h-4zM4 10h4v4H4zM10 10h4v4h-4zM16 10h4v4h-4z"></path></svg></button>
             </div>
         </div>
         <div id="filter-tags" class="flex flex-wrap gap-1.5 mb-2"></div>
     </div>
 
     <div class="flex justify-center bg-white/90 backdrop-blur-md sticky top-0 z-30 border-b border-pink-50 mb-8">
-        <button onclick="switchTab('works')" id="tab-works" class="px-5 py-4 text-[10px] tracking-widest uppercase">Works<span id="count-works" class="count-badge">0</span></button>
-        <button onclick="switchTab('chars')" id="tab-chars" class="px-5 py-4 text-[10px] tracking-widest uppercase">Characters<span id="count-chars" class="count-badge">0</span></button>
-        <button onclick="switchTab('couplings')" id="tab-couplings" class="px-5 py-4 text-[10px] tracking-widest uppercase">Combi/CP<span id="count-couplings" class="count-badge">0</span></button>
+        <button onclick="switchTab('works')" id="tab-works" class="px-5 py-4 text-[10px] tracking-widest uppercase">Works<span id="count-works" class="ml-1 text-pink-300"></span></button>
+        <button onclick="switchTab('chars')" id="tab-chars" class="px-5 py-4 text-[10px] tracking-widest uppercase">Characters<span id="count-chars" class="ml-1 text-pink-300"></span></button>
+        <button onclick="switchTab('couplings')" id="tab-couplings" class="px-5 py-4 text-[10px] tracking-widest uppercase">Combi/CP<span id="count-couplings" class="ml-1 text-pink-300"></span></button>
     </div>
 
     <main class="max-w-2xl mx-auto px-4 md:px-6">
-        <div id="content-area" class="grid gap-6"></div>
+        <div id="content-area" class="grid gap-4"></div>
     </main>
 
     <div id="detail-view">
-        <div class="sticky top-0 p-6 z-50 flex justify-between items-center bg-white/80 backdrop-blur-md">
+        <div class="sticky top-0 p-6 z-[150] flex justify-between items-center bg-white/80 backdrop-blur-md">
             <button onclick="closeDetail()" class="text-pink-400 font-bold text-[10px] tracking-widest uppercase">← CLOSE</button>
-            <div class="flex items-center gap-3">
-                <button id="move-up-btn" class="text-gray-400 text-sm">▲</button>
-                <button id="move-down-btn" class="text-gray-400 text-sm">▼</button>
+            <div class="flex items-center gap-4">
                 <div id="auto-save-status" class="text-[9px] text-gray-300 font-bold uppercase tracking-widest">Saved</div>
-                <button id="header-delete-btn" class="text-red-500 font-extrabold text-[10px] uppercase bg-red-50 px-3 py-1.5 rounded-lg">DELETE</button>
+                <button id="header-delete-btn" class="text-red-500 font-extrabold text-[10px] bg-red-50 px-3 py-1.5 rounded-lg shadow-sm">DELETE</button>
             </div>
         </div>
         <div id="detail-content" class="max-w-3xl mx-auto px-8 pb-10"></div>
@@ -84,50 +95,10 @@
         <button onclick="openEntryModal()" class="w-16 h-16 btn-pink rounded-full shadow-2xl flex items-center justify-center text-3xl font-light">+</button>
     </div>
 
-<style>
-    <div id="toast" class="fixed top-10 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full text-[10px] font-bold tracking-[0.2em] opacity-0 transition-opacity z-[110] uppercase">Success</div>
-        /* サイコロが振られる時のアニメーション */
-    @keyframes dice-shake {
-        0% { transform: rotate(0deg); }
-        25% { transform: rotate(-20deg); }
-        50% { transform: rotate(20deg); }
-        75% { transform: rotate(-10deg); }
-        100% { transform: rotate(0deg); }
-    }
-    .dice-anim { animation: dice-shake 0.4s ease-in-out; }
+    <div id="toast" class="fixed top-10 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full text-[10px] font-bold tracking-[0.2em] opacity-0 transition-opacity z-[200] uppercase">Success</div>
 
-    /* サイコロボタン専用のスタイリング */
-    .btn-shuffle {
-        background: white;
-        color: #f472b6;
-        border: 1px solid #fce7f3;
-        width: 46px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 14px;
-        transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .btn-shuffle:active { transform: scale(0.9) rotate(15deg); background: #fff1f2; }
-</style>
-
-<div class="flex gap-2 mb-4">
-    <input type="text" id="search-bar" oninput="render()" placeholder="検索..." class="bg-white border-none py-3 rounded-xl shadow-sm flex-1 px-4 text-sm outline-none">
-    
-    <button onclick="randomPickAnimated(this)" class="btn-shuffle card-shadow" title="ランダム表示">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <rect x="3" y="3" width="18" height="18" rx="4" stroke-width="2.5"></rect>
-            <circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"></circle>
-            <circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"></circle>
-            <circle cx="12" cy="12" r="1.2" fill="currentColor"></circle>
-            <circle cx="15.5" cy="8.5" r="1.2" fill="currentColor"></circle>
-            <circle cx="8.5" cy="15.5" r="1.2" fill="currentColor"></circle>
-        </svg>
-    </button>
-
-    <div class="flex bg-white rounded-xl shadow-sm p-1 gap-0.5">
-        </div>
-</div>
+    <datalist id="datalist-works"></datalist>
+    <datalist id="datalist-chars"></datalist>
 
     <script>
         const defaultSchemas = {
@@ -136,55 +107,16 @@
             couplings: [{ id: 'name', label: 'カプ名', type: 'text', visible: true, isTitle: true }, { id: 'char1', label: 'キャラ1', type: 'text', visible: true }, { id: 'char2', label: 'キャラ2', type: 'text', visible: true }, { id: 'work', label: '作品', type: 'text', visible: true }, { id: 'period', label: '時期', type: 'date', visible: true }, { id: 'img', label: '画像', type: 'file', visible: true }, { id: 'memo', label: 'Note', type: 'textarea', visible: true, isAccordion: true }, { id: 'tags', label: 'タグ', type: 'tags', visible: true }]
         };
 
-        const samples = {
-            works: [{ name: "サンプル", media: "絵本", period: "2026-03-07", memo: "並び替え機能が追加されました。", tags: "サンプル", isStar: true, visConfig: {} }],
-            chars: [
-                { name: "太郎", work: "サンプル", period: "2026-03-07", memo: "元気な男の子。", tags: "主人公", ribbonId: "name", visConfig: {} },
-                { name: "花子", work: "サンプル", period: "2026-03-07", memo: "しっかり者の女の子。", tags: "ヒロイン", ribbonId: "name", isStar: true, visConfig: {} }
-            ],
-            couplings: [{ name: "花太", char1: "花子", char2: "太郎", work: "サンプル", period: "2026-03-07", memo: "仲良しな二人組。", tags: "友情", visConfig: { name: false } }]
-        };
+        let state = { currentTab: 'works', layoutMode: localStorage.getItem('archive_layout') || 'normal', schemas: JSON.parse(localStorage.getItem('archive_schemas')) || defaultSchemas, data: JSON.parse(localStorage.getItem('archive_data')) || {works:[], chars:[], couplings:[]}, activeTag: null };
 
-        let state = { 
-            currentTab: 'works', 
-            layoutMode: localStorage.getItem('archive_layout') || 'normal',
-            schemas: JSON.parse(localStorage.getItem('archive_schemas')) || defaultSchemas, 
-            data: JSON.parse(localStorage.getItem('archive_data')) || samples, 
-            activeTag: null 
-        };
+        const compressImage = (f) => new Promise(r => { const rd = new FileReader(); rd.readAsDataURL(f); rd.onload = (e) => { const img = new Image(); img.src = e.target.result; img.onload = () => { const canvas = document.createElement('canvas'); let w = img.width, h = img.height, max = 1200; if (w > h) { if (w > max) { h *= max / w; w = max; } } else { if (h > max) { w *= max / h; h = max; } } canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h); r(canvas.toDataURL('image/jpeg', 0.8)); }; }; });
 
-        const compressImage = (file) => {
-            return new Promise((resolve) => {
-                const reader = new FileReader(); reader.readAsDataURL(file);
-                reader.onload = (e) => {
-                    const img = new Image(); img.src = e.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        let w = img.width; let h = img.height; const max = 1000;
-                        if (w > h) { if (w > max) { h *= max / w; w = max; } } else { if (h > max) { w *= max / h; h = max; } }
-                        canvas.width = w; canvas.height = h;
-                        const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, w, h);
-                        resolve(canvas.toDataURL('image/jpeg', 0.7));
-                    };
-                };
-            });
-        };
-
-        function setLayout(mode) {
-            state.layoutMode = mode; localStorage.setItem('archive_layout', mode);
+        function setLayout(m) {
+            state.layoutMode = m; localStorage.setItem('archive_layout', m);
             document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`btn-layout-${mode}`).classList.add('active');
+            const btn = document.getElementById(`btn-layout-${m}`);
+            if (btn) btn.classList.add('active');
             render();
-        }
-
-        function getHeaderHtml(url) {
-            if (!url) return '';
-            const isXUrl = url.includes('x.com') || url.includes('twitter.com');
-            let hClass = state.layoutMode === 'compact' ? 'h-28' : (state.layoutMode === 'normal' ? 'h-40' : 'h-72');
-            if (isXUrl && !url.match(/\.(jpeg|jpg|gif|png|webp|base64)/i)) {
-                return `<div class="w-full ${hClass} bg-pink-50 flex items-center justify-center border-b border-pink-100"><a href="${url}" target="_blank" class="bg-white text-pink-400 text-[8px] font-extrabold px-3 py-1.5 rounded-full shadow-sm border border-pink-100">X ↗</a></div>`;
-            }
-            return `<img src="${url}" class="w-full ${hClass} object-cover" onerror="this.outerHTML='<div class=\'h-12 bg-gray-50 flex items-center justify-center text-[7px] text-gray-300 font-bold uppercase\'>Error</div>'">`;
         }
 
         function render() {
@@ -192,17 +124,12 @@
             container.className = `grid gap-4 grid-${state.layoutMode}`;
             const search = (document.getElementById('search-bar')?.value || '').toLowerCase();
             const schema = state.schemas[state.currentTab];
-            
-            // Star(Favorite)を優先してソート
-            const sortedItems = [...state.data[state.currentTab]].sort((a, b) => (b.isStar ? 1 : 0) - (a.isStar ? 1 : 0));
-            
-            container.innerHTML = sortedItems.length ? '' : '<p class="text-center text-gray-300 py-32 uppercase tracking-widest text-[10px]">No Data</p>';
-            
-            // カウント更新
-            Object.keys(state.data).forEach(tab => document.getElementById(`count-${tab}`).innerText = state.data[tab].length);
+            const items = state.data[state.currentTab];
 
-            sortedItems.forEach((item, idx) => {
-                const originalIndex = state.data[state.currentTab].indexOf(item);
+            container.innerHTML = '';
+            Object.keys(state.data).forEach(t => { if(document.getElementById(`count-${t}`)) document.getElementById(`count-${t}`).innerText = state.data[t].length; });
+
+            items.forEach((item, idx) => {
                 if (search && !JSON.stringify(item).toLowerCase().includes(search)) return;
                 const tagField = schema.find(f => f.type === 'tags');
                 if (state.activeTag && !(item[tagField?.id] || '').split(',').map(t => t.trim()).includes(state.activeTag)) return;
@@ -212,145 +139,187 @@
                 const imgVal = item[imgField.id];
                 const getVis = (fid) => item.visConfig?.[fid] ?? schema.find(s=>s.id===fid).visible;
 
-                if (imgField.visible && imgVal && item.ribbonId !== 'none') {
-                    const rId = item.ribbonId || schema.find(f => f.isTitle).id;
-                    const rField = schema.find(f => f.id === rId);
-                    if (rField && item[rField.id]) {
-                        const rSize = state.layoutMode === 'compact' ? 'text-[7px] top-[10px] py-[2px] px-[10px]' : 'text-[9px] top-[15px] py-[4px] px-[14px]';
-                        ribbonHtml = `<div class="ribbon-label uppercase ${rSize}">${item[rField.id]}</div>`;
+                if (imgField.visible && imgVal) {
+                    const tx = item.tx ?? 0, ty = item.ty ?? 0, ts = item.ts ?? 1;
+                    const hClass = state.layoutMode === 'compact' ? 'h-28' : (state.layoutMode === 'normal' ? 'h-44' : 'h-80');
+                    if (imgVal.includes('x.com') || imgVal.includes('twitter.com')) {
+                        headerHtml = `<div class="w-full ${hClass} bg-pink-50 flex items-center justify-center border-b border-pink-100"><a href="${imgVal}" target="_blank" class="bg-white text-pink-400 text-[8px] font-extrabold px-3 py-1.5 rounded-full border border-pink-100 uppercase">View X</a></div>`;
+                    } else {
+                        headerHtml = `<div class="w-full ${hClass} overflow-hidden border-b border-pink-50 relative"><img src="${imgVal}" class="absolute w-full h-full object-contain" style="transform: translate(${tx}px, ${ty}px) scale(${ts});"></div>`;
+                    }
+                    if (item.ribbonId !== 'none') {
+                        const rField = schema.find(f => f.id === (item.ribbonId || schema.find(s=>s.isTitle).id));
+                        if (rField && item[rField.id]) {
+                            const rSize = state.layoutMode === 'compact' ? 'text-[7px] top-[10px] py-[2px] px-[10px]' : 'text-[9px] top-[15px] py-[4px] px-[14px]';
+                            ribbonHtml = `<div class="ribbon-label uppercase ${rSize}">${item[rField.id]}</div>`;
+                        }
                     }
                 }
 
-                if (state.currentTab === 'couplings') {
-                    const v1 = getVis('char1'); const v2 = getVis('char2');
-                    if ((v1 || v2) && (item.char1 || item.char2)) {
-                        const fontSize = state.layoutMode === 'compact' ? 'text-[11px]' : 'text-[14px]';
-                        coupleHtml = `<div class="col-span-2 couple-display"><span class="couple-char ${fontSize}">${item.char1 || ''}</span><span class="couple-divider">&</span><span class="couple-char ${fontSize}">${item.char2 || ''}</span></div>`;
-                    }
+                if (state.currentTab === 'couplings' && (getVis('char1') || getVis('char2'))) {
+                    coupleHtml = `<div class="col-span-2 flex items-baseline gap-2 mb-2 pl-3 border-l-2 border-pink-100"><span class="font-bold text-gray-700 ${state.layoutMode==='compact'?'text-[11px]':'text-sm'}">${item.char1 || ''}</span><span class="text-[9px] text-pink-200">&</span><span class="font-bold text-gray-700 ${state.layoutMode==='compact'?'text-[11px]':'text-sm'}">${item.char2 || ''}</span></div>`;
                 }
-
-                headerHtml = imgField.visible ? getHeaderHtml(imgVal) : '';
-                const starHtml = item.isStar ? '<div class="star-pin">✦</div>' : '';
 
                 schema.forEach(field => {
                     if (state.currentTab === 'couplings' && (field.id === 'char1' || field.id === 'char2')) return;
-                    if (!getVis(field.id) || !item[field.id] || field.isAccordion || field.type === 'url') return;
-                    if (field.isTitle) {
-                        const tSize = state.layoutMode === 'compact' ? 'text-[11px]' : (state.layoutMode === 'normal' ? 'text-sm' : 'text-lg');
-                        titleHtml = `<h2 class="${tSize} font-bold text-gray-800 leading-tight">${item[field.id]}</h2>`;
-                    } else if (field.type !== 'file') {
+                    if (!getVis(field.id) || !item[field.id] || field.isAccordion || field.type === 'url' || field.type === 'file') return;
+                    if (field.isTitle) titleHtml = `<h2 class="${state.layoutMode==='compact'?'text-[11px]':'text-sm'} font-bold text-gray-800 truncate">${item[field.id]}</h2>`;
+                    else {
                         const isMain = field.id === 'work' || field.label.includes('作品');
                         if (state.layoutMode === 'compact' && !isMain) return;
                         fieldsHtml += `<div class="${isMain ? 'no-img-accent col-span-2' : 'mb-0.5'}">${isMain ? '' : `<label class="text-[6px] text-gray-300 uppercase font-bold tracking-widest block">${field.label}</label>`}<span class="${isMain ? 'text-[10px] text-gray-700 font-bold' : 'text-[8px] text-gray-600 font-medium'}">${item[field.id]}</span></div>`;
                     }
                 });
 
-                const cP = state.layoutMode === 'compact' ? 'p-2' : (state.layoutMode === 'normal' ? 'p-3' : 'p-5');
-                container.innerHTML += `<div class="bg-white rounded-[1.5rem] overflow-hidden card-shadow border border-pink-50 relative active:scale-[0.98] transition-all" onclick="openDetail(${originalIndex})">${starHtml}${ribbonHtml}${headerHtml}<div class="${cP}">${titleHtml ? `<div class="mb-1.5">${titleHtml}</div>` : ''}<div class="grid grid-cols-2 gap-x-2 gap-y-0.5 items-end">${coupleHtml}${fieldsHtml}</div></div></div>`;
+                container.innerHTML += `<div class="bg-white ${state.layoutMode==='compact'?'rounded-[1rem]':'rounded-[1.5rem]'} overflow-hidden card-shadow border border-pink-50 relative active:scale-[0.98] transition-all" onclick="openDetail(${idx})">${ribbonHtml}${headerHtml}<div class="${state.layoutMode==='compact'?'p-2':'p-4'}">${titleHtml ? `<div class="mb-2">${titleHtml}</div>` : ''}<div class="grid grid-cols-2 gap-x-2 gap-y-0.5 items-end">${coupleHtml}${fieldsHtml}</div></div></div>`;
             });
-            renderTagFilters(state.data[state.currentTab], schema);
+            updateDatalists(); renderTagFilters();
         }
 
         function openDetail(index) {
             const item = state.data[state.currentTab][index];
             const schema = state.schemas[state.currentTab];
             const content = document.getElementById('detail-content');
-            let html = '';
-            const imgField = schema.find(f => f.type === 'file');
+            const imgId = schema.find(f => f.type === 'file').id;
 
-            // ヘッダーボタンの同期
             document.getElementById('header-delete-btn').onclick = () => { if(confirm('Delete?')) { state.data[state.currentTab].splice(index, 1); saveState(); closeDetail(); render(); } };
-            document.getElementById('move-up-btn').onclick = () => moveEntry(index, -1);
-            document.getElementById('move-down-btn').onclick = () => moveEntry(index, 1);
 
-            html += `<div class="relative mb-12">${item[imgField.id] ? `<img src="${item[imgField.id]}" class="w-full h-[50vh] object-cover rounded-[3rem] shadow-2xl"><button onclick="updateDetailField(${index}, '${imgField.id}', ''); openDetail(${index}); event.stopPropagation();" class="absolute top-6 right-6 bg-black/60 text-white text-[8px] font-bold px-3 py-1.5 rounded-full backdrop-blur-sm">REMOVE IMAGE</button>` : '<div class="no-img-header rounded-[3rem] shadow-inner flex items-center justify-center text-[10px] text-gray-300 font-bold uppercase tracking-widest h-64 bg-gray-50">Add Photo</div>'}<input type="file" onchange="updateDetailImage(${index}, this)" class="absolute inset-0 opacity-0 cursor-pointer"></div>`;
-            
-            // Star スイッチ
-            html += `<div class="flex items-center justify-between mb-8 p-4 bg-amber-50 rounded-2xl border border-amber-100"><label class="text-[10px] font-bold text-amber-600 uppercase tracking-widest">Favorite Star Pin</label><button onclick="updateDetailField(${index}, 'isStar', ${!item.isStar}); openDetail(${index});" class="toggle-btn ${item.isStar ? 'bg-amber-400 text-white' : 'bg-white text-gray-300'}">${item.isStar ? 'ON' : 'OFF'}</button></div>`;
+            let imgHtml = `<div class="mb-10 p-4 bg-gray-50 rounded-[2.5rem] border border-pink-50 relative">`;
+            if (item[imgId]) {
+                const ts = item.ts ?? 1;
+                imgHtml += `
+                <div class="crop-viewport shadow-inner" id="crop-area">
+                    <img id="crop-img" src="${item[imgId]}" class="crop-img-entity" style="width:100%; height:100%; object-fit:contain; transform: translate(${item.tx || 0}px, ${item.ty || 0}px) scale(${ts});">
+                    <div class="crop-overlay"></div>
+                </div>
+                <div class="mt-8 px-6 space-y-2">
+                    <label class="text-[10px] font-extrabold text-pink-400 uppercase tracking-widest block text-center">Zoom Slider</label>
+                    <input type="range" min="1" max="6" step="0.05" value="${ts}" oninput="updateZoom(${index}, this.value)">
+                </div>
+                <div class="absolute top-8 right-8 flex gap-2 z-[110]">
+                    <label class="bg-white/90 backdrop-blur-md text-pink-500 text-[8px] font-extrabold px-3 py-2 rounded-full cursor-pointer shadow-lg border border-pink-100">CHANGE<input type="file" onchange="updateDetailImage(${index}, this)" class="hidden"></label>
+                    <button onclick="updateDetailField(${index}, '${imgId}', ''); openDetail(${index}); event.stopPropagation();" class="bg-red-500 text-white text-[8px] font-extrabold px-3 py-2 rounded-full shadow-lg">REMOVE</button>
+                </div>`;
+            } else {
+                imgHtml += `<div class="h-48 flex flex-col items-center justify-center border-2 border-dashed border-pink-100 rounded-[2rem] bg-white relative">
+                    <span class="text-pink-300 font-bold uppercase text-[10px] tracking-widest">Tap to Add Photo</span>
+                    <input type="file" onchange="updateDetailImage(${index}, this)" class="absolute inset-0 opacity-0 cursor-pointer">
+                </div>`;
+            }
+            imgHtml += `</div>`;
+
+            let fieldsHtml = `<div class="mb-10 p-4 bg-gray-100/40 rounded-2xl border border-gray-100"><label class="text-[9px] text-gray-400 font-bold block mb-2 uppercase tracking-tighter">Direct URL</label><input type="text" value="${item[imgId]?.startsWith('http')?item[imgId]:''}" onchange="updateDetailField(${index}, '${imgId}', this.value); openDetail(${index})" class="w-full bg-white text-xs p-2 rounded-lg border-none outline-none"></div>`;
 
             let noteHtml = '';
             schema.forEach((field, i) => {
                 if (field.type === 'file') return;
                 const isVisible = item.visConfig?.[field.id] ?? field.visible;
-                if (field.isAccordion) { noteHtml = `<div class="memo-outer"><label class="text-[10px] text-pink-300 font-extrabold uppercase tracking-[0.5em] block mb-10 text-center">— Note —</label><textarea oninput="updateDetailField(${index}, '${field.id}', this.value); autoGrow(this)" class="auto-expand-input leading-loose text-gray-600 text-base min-h-[500px]" placeholder="...">${item[field.id] || ''}</textarea></div>`; return; }
-                if (field.isTitle) {
-                    html += `<div class="flex items-center gap-3 mb-8"><button onclick="toggleCardVis(${i}, ${index})" class="toggle-btn ${isVisible ? 'toggle-on' : 'toggle-off'}">${isVisible ? 'ON' : 'OFF'}</button><textarea oninput="updateDetailField(${index}, '${field.id}', this.value); autoGrow(this)" class="text-3xl font-bold tracking-tight w-full outline-none resize-none overflow-hidden h-auto bg-transparent" placeholder="Untitled">${item[field.id] || ''}</textarea></div>`;
+                const dl = (field.id === 'work' || field.label.includes('作品')) ? 'list="datalist-works"' : ((field.label.includes('キャラ') || field.label.includes('名前')) ? 'list="datalist-chars"' : '');
+                
+                if (field.isAccordion) { 
+                    noteHtml = `<div class="memo-outer"><label class="text-[11px] text-pink-300 font-extrabold uppercase tracking-[0.5em] block mb-12 text-center">— Note —</label><textarea oninput="updateDetailField(${index}, '${field.id}', this.value); autoGrow(this)" class="auto-expand-input leading-loose text-gray-600 text-base min-h-[600px]">${item[field.id] || ''}</textarea></div>`;
                 } else {
-                    html += `<div class="flex items-start py-4 border-b border-gray-50 group gap-2"><button onclick="toggleCardVis(${i}, ${index})" class="toggle-btn flex-shrink-0 mt-2 ${isVisible ? 'toggle-on' : 'toggle-off'}">${isVisible ? 'ON' : 'OFF'}</button><label class="w-24 text-[9px] text-gray-300 font-bold uppercase tracking-widest pt-2.5 flex-shrink-0">${field.label}</label><textarea oninput="updateDetailField(${index}, '${field.id}', this.value); autoGrow(this)" class="auto-expand-input text-sm text-gray-600 font-medium" rows="1">${item[field.id] || ''}</textarea></div>`;
+                    fieldsHtml += `<div class="flex items-start py-4 border-b border-gray-50 group gap-2">
+                        <div class="flex flex-col gap-1 pr-1">
+                            <button onclick="moveDetailField(${index}, ${i}, -1)" class="text-[10px] text-pink-300 font-bold">▲</button>
+                            <button onclick="moveDetailField(${index}, ${i}, 1)" class="text-[10px] text-pink-300 font-bold">▼</button>
+                        </div>
+                        <button onclick="toggleCardVis(${i}, ${index})" class="toggle-btn flex-shrink-0 mt-2 ${isVisible ? 'toggle-on' : 'toggle-off'}">${isVisible ? 'ON' : 'OFF'}</button>
+                        <label class="w-20 text-[9px] text-gray-300 font-bold uppercase tracking-widest pt-2.5 flex-shrink-0">${field.label}</label>
+                        <textarea ${dl} oninput="updateDetailField(${index}, '${field.id}', this.value); autoGrow(this)" class="auto-expand-input ${field.isTitle ? 'text-2xl font-bold' : 'text-sm text-gray-600'}" rows="1">${item[field.id] || ''}</textarea>
+                    </div>`;
                 }
             });
 
-            html += `<div class="py-6 flex justify-center"><button onclick="addDetailField(${index})" class="text-[10px] text-pink-300 font-bold uppercase tracking-widest">+ Add Field</button></div>${noteHtml}`;
-            content.innerHTML = html;
+            content.innerHTML = imgHtml + fieldsHtml + `<div class="py-6 flex justify-center"><button onclick="addDetailField(${index})" class="text-[10px] text-pink-300 font-bold uppercase">+ Add Field</button></div>` + noteHtml;
             document.querySelectorAll('textarea').forEach(t => autoGrow(t));
+            initPhotoAppDrag(index);
             document.getElementById('detail-view').classList.add('open');
             document.body.style.overflow = 'hidden';
         }
 
-        // 並び替えロジック
-        function moveEntry(idx, dir) {
-            const list = state.data[state.currentTab];
-            if (idx + dir < 0 || idx + dir >= list.length) return;
-            [list[idx], list[idx + dir]] = [list[idx + dir], list[idx]];
-            saveState(); openDetail(idx + dir); render();
+        function moveDetailField(entryIdx, fieldIdx, dir) {
+            const schema = state.schemas[state.currentTab];
+            if (fieldIdx + dir < 0 || fieldIdx + dir >= schema.length) return;
+            [schema[fieldIdx], schema[fieldIdx + dir]] = [schema[fieldIdx + dir], schema[fieldIdx]];
+            saveState(); openDetail(entryIdx); render();
         }
 
-        // ランダムピック
-            // 動きを加えたランダムピック関数
-    function randomPickAnimated(btn) {
-        const list = state.data[state.currentTab];
-        if (!list.length) return;
-        
-        // アニメーション開始
-        btn.classList.add('dice-anim');
-        showToast('SHUFFLING...');
-        
-        // 少し遅らせてから詳細を開く（振っている感を出す）
-        setTimeout(() => {
-            btn.classList.remove('dice-anim');
-            const rIdx = Math.floor(Math.random() * list.length);
-            openDetail(rIdx);
-        }, 400);
-    }
-        
-    function randomPick() {
-            const list = state.data[state.currentTab];
-            if (!list.length) return;
-            const rIdx = Math.floor(Math.random() * list.length);
-            openDetail(rIdx);
+        function initPhotoAppDrag(idx) {
+            const area = document.getElementById('crop-area');
+            const img = document.getElementById('crop-img');
+            if(!area || !img) return;
+            let isDragging = false, sx, sy;
+            let tx = state.data[state.currentTab][idx].tx || 0, ty = state.data[state.currentTab][idx].ty || 0;
+            const start = (e) => { isDragging = true; const p = e.touches ? e.touches[0] : e; sx = p.clientX; sy = p.clientY; };
+            const move = (e) => {
+                if(!isDragging) return;
+                const p = e.touches ? e.touches[0] : e;
+                tx += (p.clientX - sx); ty += (p.clientY - sy);
+                img.style.transform = `translate(${tx}px, ${ty}px) scale(${state.data[state.currentTab][idx].ts || 1})`;
+                sx = p.clientX; sy = p.clientY;
+            };
+            const end = () => { if(isDragging) { isDragging = false; updateDetailField(idx, 'tx', tx); updateDetailField(idx, 'ty', ty); } };
+            area.addEventListener('mousedown', start); area.addEventListener('touchstart', start);
+            window.addEventListener('mousemove', move); window.addEventListener('touchmove', move, {passive: false});
+            window.addEventListener('mouseup', end); window.addEventListener('touchend', end);
         }
 
+        function updateZoom(idx, val) {
+            state.data[state.currentTab][idx].ts = parseFloat(val);
+            const img = document.getElementById('crop-img');
+            if(img) img.style.transform = `translate(${state.data[state.currentTab][idx].tx || 0}px, ${state.data[state.currentTab][idx].ty || 0}px) scale(${val})`;
+            saveState();
+        }
 
-        // 基本機能
-        function toggleCardVis(fIdx, eIdx) { const fId = state.schemas[state.currentTab][fIdx].id; const entry = state.data[state.currentTab][eIdx]; if(!entry.visConfig) entry.visConfig = {}; entry.visConfig[fId] = !(entry.visConfig[fId] ?? state.schemas[state.currentTab][fIdx].visible); saveState(); openDetail(eIdx); render(); }
+        function updateDatalists() {
+            const wSet = new Set(), cSet = new Set();
+            Object.values(state.data).flat().forEach(d => { if(d.name) {if(state.data.works.includes(d)) wSet.add(d.name); else cSet.add(d.name);} if(d.work) wSet.add(d.work); if(d.char1) cSet.add(d.char1); if(d.char2) cSet.add(d.char2); });
+            document.getElementById('datalist-works').innerHTML = [...wSet].map(w => `<option value="${w}">`).join('');
+            document.getElementById('datalist-chars').innerHTML = [...cSet].map(c => `<option value="${c}">`).join('');
+        }
+
         function saveState() { localStorage.setItem('archive_data', JSON.stringify(state.data)); localStorage.setItem('archive_schemas', JSON.stringify(state.schemas)); }
         function switchTab(t) { state.currentTab = t; document.querySelectorAll('button[id^="tab-"]').forEach(b => b.classList.remove('tab-active')); document.getElementById(`tab-${t}`).classList.add('tab-active'); render(); }
         function closeDetail() { document.getElementById('detail-view').classList.remove('open'); document.body.style.overflow = ''; render(); }
-        function updateDetailField(idx, id, val) { state.data[state.currentTab][idx][id] = val; saveState(); document.getElementById('auto-save-status').innerText = 'Saving...'; setTimeout(() => document.getElementById('auto-save-status').innerText = 'Saved', 800); }
+        function updateDetailField(idx, id, val) { state.data[state.currentTab][idx][id] = val; saveState(); document.getElementById('auto-save-status').innerText = 'Saving...'; setTimeout(() => { if(document.getElementById('auto-save-status')) document.getElementById('auto-save-status').innerText = 'Saved'; }, 800); }
         async function updateDetailImage(idx, input) { if (input.files[0]) { const b64 = await compressImage(input.files[0]); updateDetailField(idx, state.schemas[state.currentTab].find(f => f.type === 'file').id, b64); openDetail(idx); } }
-        function openSettings() { document.getElementById('settings-modal').classList.remove('hidden'); renderSettingsFields(); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-        function renderTagFilters(items, schema) { const tagSet = new Set(); const tf = schema.find(f => f.type === 'tags'); items.forEach(item => { if (tf && item[tf.id]) item[tf.id].split(',').forEach(t => tagSet.add(t.trim())); }); const fc = document.getElementById('filter-tags'); fc.innerHTML = `<span onclick="state.activeTag=null;render()" class="tag-chip ${!state.activeTag ? 'bg-pink-400 text-white' : 'bg-gray-100 text-gray-400'}">すべて</span>`; tagSet.forEach(tag => fc.innerHTML += `<span onclick="state.activeTag='${tag}';render()" class="tag-chip ${state.activeTag===tag?'bg-pink-400 text-white':'bg-white text-pink-400'}">${tag}</span>`); }
+        function randomPickAnimated(btn) { btn.classList.add('dice-anim'); setTimeout(() => { btn.classList.remove('dice-anim'); openDetail(Math.floor(Math.random() * state.data[state.currentTab].length)); }, 400); }
+        function toggleCardVis(fIdx, eIdx) { const fId = state.schemas[state.currentTab][fIdx].id; const entry = state.data[state.currentTab][eIdx]; if(!entry.visConfig) entry.visConfig = {}; entry.visConfig[fId] = !(entry.visConfig[fId] ?? state.schemas[state.currentTab][fIdx].visible); saveState(); openDetail(eIdx); render(); }
         function autoGrow(el) { el.style.height = "5px"; el.style.height = (el.scrollHeight) + "px"; }
         function exportStandalone() { let h = document.documentElement.outerHTML; const d = `<script>window.PRELOADED_DATA = ${JSON.stringify(state.data)}; window.PRELOADED_SCHEMAS = ${JSON.stringify(state.schemas)};<\/script>`; h = h.replace('</head>', d + '</head>'); const b = new Blob([h], {type: 'text/html'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'Archive_Site.html'; a.click(); }
         function exportData() { const blob = new Blob([JSON.stringify(state.data)]); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup.json'; a.click(); }
         async function createShareLink() { try { const res = await fetch('https://api.jsonstorage.net/v1/json', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ data: state.data, schemas: state.schemas }) }); const r = await res.json(); await navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?id=${r.uri.split('/').pop()}`); alert("Copied!"); } catch (e) { alert("Error"); } }
-        function renderSettingsFields() { const c = document.getElementById('settings-fields'); c.innerHTML = ''; state.schemas[state.currentTab].forEach((f, i) => { c.innerHTML += `<div class="flex items-center gap-3 mb-2"><input type="text" value="${f.label}" onchange="state.schemas[state.currentTab][${i}].label=this.value" class="text-xs p-3 flex-1 rounded-xl bg-gray-50 border-none"><button onclick="state.schemas[state.currentTab][${i}].visible=!state.schemas[state.currentTab][${i}].visible;renderSettingsFields()" class="toggle-btn ${f.visible?'toggle-on':'toggle-off'}">${f.visible?'ON':'OFF'}</button></div>`; }); }
+        function openSettings() { document.getElementById('settings-modal').classList.remove('hidden'); renderSettingsFields(); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function addDetailField(idx) { state.schemas[state.currentTab].push({ id: 'c'+Date.now(), label: '新項目', type: 'text', visible: true }); openDetail(idx); }
+
+        function renderSettingsFields() {
+            const c = document.getElementById('settings-fields'); c.innerHTML = '';
+            state.schemas[state.currentTab].forEach((f, i) => {
+                c.innerHTML += `<div class="flex items-center gap-3 mb-3 p-3 bg-gray-50 rounded-2xl">
+                    <input type="text" value="${f.label}" onchange="state.schemas[state.currentTab][${i}].label=this.value" class="text-xs p-2 flex-1 bg-white border-none rounded-lg">
+                    <button onclick="state.schemas[state.currentTab][${i}].visible=!state.schemas[state.currentTab][${i}].visible;renderSettingsFields()" class="toggle-btn ${f.visible?'toggle-on':'toggle-off'}">${f.visible?'ON':'OFF'}</button>
+                    ${f.isTitle ? '' : `<button onclick="if(confirm('削除？')){state.schemas[state.currentTab].splice(${i},1);renderSettingsFields()}" class="text-gray-300 font-bold px-2">×</button>`}
+                </div>`;
+            });
+        }
+        function renderTagFilters() { const tagSet = new Set(); const tf = state.schemas[state.currentTab].find(f => f.type === 'tags'); state.data[state.currentTab].forEach(item => { if (tf && item[tf.id]) item[tf.id].split(',').forEach(t => tagSet.add(t.trim())); }); const fc = document.getElementById('filter-tags'); fc.innerHTML = `<span onclick="state.activeTag=null;render()" class="tag-chip ${!state.activeTag ? 'bg-pink-400 text-white' : 'bg-gray-100 text-gray-400'}">すべて</span>`; tagSet.forEach(tag => fc.innerHTML += `<span onclick="state.activeTag='${tag}';render()" class="tag-chip ${state.activeTag===tag?'bg-pink-400 text-white':'bg-white text-pink-400'}">${tag}</span>`); }
 
         window.addEventListener('load', async () => {
             const params = new URLSearchParams(window.location.search);
             if (params.get('id')) { try { const res = await fetch(`https://api.jsonstorage.net/v1/json/${params.get('id')}`); const s = await res.json(); state.data = s.data; state.schemas = s.schemas; } catch (e) {} }
             if (window.PRELOADED_DATA) { state.data = window.PRELOADED_DATA; state.schemas = window.PRELOADED_SCHEMAS; }
             setLayout(state.layoutMode);
-            switchTab('works');
         });
 
         function openEntryModal() {
-            const m = document.createElement('div'); m.className = "fixed inset-0 bg-black/40 flex items-center justify-center z-[70] p-4 backdrop-blur-md"; m.id = "new-entry-modal";
+            const m = document.createElement('div'); m.className = "fixed inset-0 bg-black/40 flex items-center justify-center z-[130] p-4 backdrop-blur-md"; m.id = "new-entry-modal";
             let f = state.schemas[state.currentTab].map(s => {
-                if(s.type === 'file') return `<div><label class="text-[9px] text-gray-400 font-bold uppercase">${s.label}</label><input type="file" id="new-${s.id}" class="text-xs block mb-2"><input type="text" id="new-url-${s.id}" placeholder="またはURL" class="w-full border-pink-100 border p-3 rounded-xl text-[11px] mb-4 outline-none"></div>`;
+                if(s.type === 'file') return `<div><label class="text-[9px] text-gray-400 font-bold uppercase">${s.label}</label><input type="file" id="new-${s.id}" class="text-xs block mb-2"><input type="text" id="new-url-${s.id}" placeholder="URL" class="w-full border-pink-100 border p-3 rounded-xl text-[11px] mb-4 outline-none"></div>`;
                 if(s.type === 'date') return `<div><label class="text-[9px] text-gray-400 font-bold uppercase">${s.label}</label><input type="date" id="new-${s.id}" class="w-full border-pink-100 border p-3 rounded-xl text-sm mb-4 outline-none"></div>`;
-                return `<input type="text" id="new-${s.id}" placeholder="${s.label}" class="w-full border-pink-100 border p-3 rounded-xl text-sm mb-4 outline-none">`;
+                const dl = (s.id === 'work' || s.label.includes('作品')) ? 'list="datalist-works"' : ((s.label.includes('キャラ') || s.label.includes('名前')) ? 'list="datalist-chars"' : '');
+                return `<input type="text" id="new-${s.id}" ${dl} placeholder="${s.label}" class="w-full border-pink-100 border p-3 rounded-xl text-sm mb-4 outline-none">`;
             }).join('');
             m.innerHTML = `<div class="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl max-h-[90vh] overflow-y-auto"><h2 class="text-xl font-bold mb-6 text-pink-500 uppercase tracking-widest text-center">New</h2><div class="space-y-1">${f}</div><button onclick="saveEntryAction()" class="w-full btn-pink py-4 rounded-2xl font-bold mt-8 uppercase tracking-widest text-sm">Save</button><button onclick="this.closest('#new-entry-modal').remove()" class="w-full text-gray-300 text-[10px] font-bold mt-4 uppercase tracking-widest text-center">Cancel</button></div>`;
             document.body.appendChild(m);
@@ -368,13 +337,13 @@
         }
     </script>
 
-    <div id="settings-modal" class="fixed inset-0 bg-black/40 hidden items-center justify-center z-[70] p-4 backdrop-blur-md text-sm">
-        <div class="bg-white w-full max-w-lg rounded-[2.5rem] p-8 max-h-[90vh] overflow-y-auto">
+    <div id="settings-modal" class="fixed inset-0 bg-black/40 hidden items-center justify-center z-[140] p-4 backdrop-blur-md">
+        <div class="bg-white w-full max-w-lg rounded-[2.5rem] p-8 max-h-[90vh] overflow-y-auto shadow-2xl">
             <h2 class="text-xl font-bold mb-6 text-pink-500 uppercase tracking-widest text-center">Settings</h2>
-            <div id="settings-fields" class="space-y-1"></div>
-            <button onclick="state.schemas[state.currentTab].push({ id: 'c'+Date.now(), label: 'New Field', type: 'text', visible: true }); renderSettingsFields();" class="text-[11px] font-bold text-pink-300 mt-8 block uppercase tracking-widest mx-auto">+ Add New Field</button>
+            <div id="settings-fields"></div>
+            <button onclick="state.schemas[state.currentTab].push({ id: 'c'+Date.now(), label: '新項目', type: 'text', visible: true }); renderSettingsFields();" class="text-[11px] font-bold text-pink-300 mt-8 block uppercase tracking-widest mx-auto">+ Add New Field</button>
             <div class="flex gap-4 mt-10 pt-6 border-t border-pink-50">
-                <button onclick="saveState(); closeModal('settings-modal'); render();" class="flex-1 btn-pink py-4 rounded-2xl font-bold uppercase tracking-widest">Apply</button>
+                <button onclick="saveState(); closeModal('settings-modal'); render();" class="flex-1 btn-pink py-4 rounded-2xl font-bold uppercase tracking-widest text-sm shadow-xl shadow-pink-100">Apply</button>
                 <button onclick="closeModal('settings-modal')" class="px-6 py-4 text-gray-400 text-xs uppercase tracking-widest">Close</button>
             </div>
         </div>
